@@ -9,15 +9,29 @@ import android.widget.Button
 import com.cst.cstacademy2024.helpers.extensions.logErrorMessage
 
 class MainActivity : AppCompatActivity() {
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        setContentView(R.layout.activity_main)
+//
+//        val button: Button = findViewById(R.id.btn_press)
+//        button.setOnClickListener { goToSecondActivity() }
+//
+//        "onCreate".logErrorMessage()
+//    }
+
+    private lateinit var showMap: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val button: Button = findViewById(R.id.btn_press)
-        button.setOnClickListener { goToSecondActivity() }
-
-        "onCreate".logErrorMessage()
+        showMap = findViewById(R.id.showMap)
+        showMap.setOnClickListener {
+            val intent = Intent(this@MainActivity, MapsActivity::class.java)
+            startActivity(intent)
+        }
     }
+
+
 
     override fun onStart() {
         super.onStart()

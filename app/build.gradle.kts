@@ -41,6 +41,8 @@ android {
 }
 
 dependencies {
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
     val nav_version = "2.7.7"
     // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
@@ -63,5 +65,10 @@ dependencies {
     implementation("androidx.room:room-runtime:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
+
+    implementation("com.google.android.gms:play-services-auth:18.1.0")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
+
 
 }
