@@ -69,6 +69,4 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:18.1.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
-
-
 }

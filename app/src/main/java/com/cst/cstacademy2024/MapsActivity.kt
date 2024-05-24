@@ -1,9 +1,5 @@
 package com.cst.cstacademy2024
 
-import androidx.annotation.NonNull
-import androidx.appcompat.widget.SearchView
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentActivity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Address
@@ -12,9 +8,12 @@ import android.location.Location
 import android.os.Bundle
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
+import com.cst.cstacademy2024.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -28,49 +27,46 @@ import com.google.android.gms.tasks.Task
 import java.io.IOException
 import java.util.Locale
 
-
 class MapsActivity : FragmentActivity(), OnMapReadyCallback {
-    lateinit var map: FrameLayout
-    lateinit var gMap: GoogleMap
-    lateinit var currentLocation: Location
-    lateinit var marker: Marker
-    lateinit var fusedClient: FusedLocationProviderClient
-    private companion object {
-        const val REQUEST_CODE = 101
-    }
-    lateinit var searchView: SearchView
+
+    private lateinit var map: FrameLayout
+    private lateinit var gMap: GoogleMap
+    private var currentLocation: Location? = null
+    private var marker: Marker? = null
+    private lateinit var fusedClient: FusedLocationProviderClient
+    private val REQUEST_CODE = 101
+    private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
         map = findViewById(R.id.map)
         searchView = findViewById(R.id.search)
         searchView.clearFocus()
+
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
         getLocation()
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
+            override fun onQueryTextSubmit(query: String?): Boolean {
                 val loc = searchView.query.toString()
-                if (loc == null) {
+                if (loc.isEmpty()) {
                     Toast.makeText(this@MapsActivity, "Location Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     val geocoder = Geocoder(this@MapsActivity, Locale.getDefault())
                     try {
-                        val addressList = geocoder.getFromLocationName(loc, 1)
-                        if (!addressList.isNullOrEmpty()) {
+                        val addressList: List<Address>? = geocoder.getFromLocationName(loc, 1)
+                        if (addressList != null && addressList.isNotEmpty()) {
                             val latLng = LatLng(addressList[0].latitude, addressList[0].longitude)
                             marker?.remove()
                             val markerOptions = MarkerOptions().position(latLng).title(loc)
                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+
                             val cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 5f)
                             gMap.animateCamera(cameraUpdate)
-                            var markernull = gMap.addMarker(markerOptions)
-                            if(markernull != null){
-                                marker = markernull
-                            }
-                            //marker = gMap.addMarker(markerOptions)
+                            marker = gMap.addMarker(markerOptions)
                         }
-
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
@@ -78,7 +74,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 return false
             }
 
-            override fun onQueryTextChange(newText: String): Boolean {
+            override fun onQueryTextChange(newText: String?): Boolean {
                 return false
             }
         })
@@ -92,20 +88,21 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
             return
         }
+
         val task: Task<Location> = fusedClient.lastLocation
-        task.addOnSuccessListener { location ->
+
+        task.addOnSuccessListener(OnSuccessListener { location ->
             if (location != null) {
                 currentLocation = location
-                //Toast.makeText(applicationContext, currentLocation.latitude.toString() + "" + currentLocation.longitude, Toast.LENGTH_SHORT).show()
                 val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
                 supportMapFragment?.getMapAsync(this@MapsActivity)
             }
-        }
+        })
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val latLng = LatLng(currentLocation.latitude, currentLocation.longitude)
+        val latLng = LatLng(currentLocation!!.latitude, currentLocation!!.longitude)
         val markerOptions = MarkerOptions().position(latLng).title("My Current Location")
         googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5f))
@@ -120,5 +117,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             }
         }
     }
-
 }
+
+
