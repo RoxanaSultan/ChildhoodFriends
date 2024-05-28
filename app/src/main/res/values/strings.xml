@@ -9,4 +9,5 @@
     <string name="user_name">User Name</string>
     <string name="password">Password</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="google_maps_key">AIzaSyBwc1_Z_Fb-z4kz9xOng7SC_oxlN4A1YeQ</string>
 </resources>
