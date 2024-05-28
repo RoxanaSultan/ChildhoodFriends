@@ -1,69 +1,59 @@
 package com.cst.cstacademy2024
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.View.OnClickListener
-import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.cst.cstacademy2024.helpers.extensions.logErrorMessage
 
 class MainActivity : AppCompatActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-//
-//        val button: Button = findViewById(R.id.btn_press)
-//        button.setOnClickListener { goToSecondActivity() }
-//
-//        "onCreate".logErrorMessage()
-//    }
-
-    private lateinit var showMap: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        showMap = findViewById(R.id.showMap)
-        showMap.setOnClickListener {
-            val intent = Intent(this@MainActivity, MapsActivity::class.java)
-            startActivity(intent)
+
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            val selectedFragment: Fragment = when (item.itemId) {
+                R.id.nav_account -> AccountFragment()
+                R.id.nav_search -> SearchFragment()
+                //R.id.nav_maps -> MapsActivity()
+                else -> AccountFragment()
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, selectedFragment)
+                .commit()
+            true
+        }
+
+        // Set default selection
+        if (savedInstanceState == null) {
+            bottomNavigationView.selectedItemId = R.id.nav_account
         }
     }
 
     override fun onStart() {
         super.onStart()
-
         "onStart".logErrorMessage()
     }
 
     override fun onResume() {
         super.onResume()
-
         "onResume".logErrorMessage()
     }
 
     override fun onPause() {
         super.onPause()
-
         "onPause".logErrorMessage()
     }
 
     override fun onStop() {
         super.onStop()
-
         "onStop".logErrorMessage()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
         "onDestroy".logErrorMessage()
-    }
-
-    private fun goToSecondActivity() {
-        val intent = Intent(this, SecondActivity::class.java)
-        startActivity(intent)
-//        finish()
     }
 }
