@@ -10,4 +10,10 @@
     <string name="password">Password</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="google_maps_key">AIzaSyBwc1_Z_Fb-z4kz9xOng7SC_oxlN4A1YeQ</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="email">Email</string>
+    <string name="age">Age</string>
+    <string name="save_changes">Save Changes</string>
 </resources>
