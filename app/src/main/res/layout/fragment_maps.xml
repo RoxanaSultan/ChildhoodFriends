@@ -5,7 +5,7 @@
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MapsActivity"
+    tools:context=".MapsFragment"
     android:layout_height="match_parent">
 
     <androidx.fragment.app.FragmentContainerView
@@ -13,7 +13,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/activity_maps" />
+        tools:layout="@layout/fragment_maps" />
 
     <androidx.appcompat.widget.SearchView
         android:layout_width="match_parent"

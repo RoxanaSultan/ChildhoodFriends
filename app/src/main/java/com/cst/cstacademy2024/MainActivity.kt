@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.nav_account -> AccountFragment()
                 R.id.nav_search -> SearchFragment()
-                //R.id.nav_maps -> MapsActivity()
+                R.id.nav_maps -> MapsFragment()
                 else -> AccountFragment()
             }
             supportFragmentManager.beginTransaction()

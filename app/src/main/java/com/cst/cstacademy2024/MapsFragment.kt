@@ -6,12 +6,15 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentActivity
-import com.cst.cstacademy2024.R
+import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -24,17 +27,16 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import java.io.IOException
-import java.util.Locale
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import java.io.IOException
+import java.util.Locale
 
-class MapsActivity : FragmentActivity(), OnMapReadyCallback {
+class MapsFragment : Fragment(), OnMapReadyCallback {
 
-    private lateinit var map: FrameLayout
     private lateinit var gMap: GoogleMap
     private var currentLocation: Location? = null
     private var currentLocationMarker: Marker? = null
@@ -44,29 +46,37 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private lateinit var searchView: SearchView
     private lateinit var placesClient: PlacesClient
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_maps, container, false)
 
-    /**
-     * Called when the activity is starting. Sets up the UI and initializes location services.
-     */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps)
+        Places.initialize(requireActivity(), getString(R.string.google_maps_key))
+        placesClient = Places.createClient(requireActivity())
 
-        Places.initialize(applicationContext, getString(R.string.google_maps_key))
-        placesClient = Places.createClient(this)
-
-        map = findViewById(R.id.map)
-        searchView = findViewById(R.id.search)
+        searchView = view.findViewById(R.id.search)
         searchView.clearFocus()
 
-        fusedClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         requestLocationPermission()
 
+        return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val supportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        supportMapFragment?.getMapAsync(this)
+        setupSearchView()
+    }
+
+    private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 val loc = searchView.query.toString()
                 if (loc.isEmpty()) {
-                    Toast.makeText(this@MapsActivity, "Location Not Found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(), "Location Not Found", Toast.LENGTH_SHORT).show()
                 } else {
                     // Use Places API to search for places
                     val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
@@ -90,7 +100,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
                                         if (latLng != null) {
                                             otherLocationMarker?.remove()
-                                            val markerOptions = MarkerOptions().position(latLng).title(placeName).snippet(placeAddress)
+                                            val markerOptions = MarkerOptions().position(latLng).title(placeName).snippet(placeName)
                                             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 
                                             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f), object : GoogleMap.CancelableCallback {
@@ -101,16 +111,16 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                                                 override fun onCancel() {}
                                             })
                                         } else {
-                                            Toast.makeText(this@MapsActivity, "Location Not Found", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(requireActivity(), "Location Not Found", Toast.LENGTH_SHORT).show()
                                         }
                                     }
                                     .addOnFailureListener { exception ->
-                                        Toast.makeText(this@MapsActivity, "Failed to fetch place details: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(requireActivity(), "Failed to fetch place details: ${exception.message}", Toast.LENGTH_SHORT).show()
                                     }
                             }
                         }
                         .addOnFailureListener { exception ->
-                            Toast.makeText(this@MapsActivity, "Failed to search for places: ${exception.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(requireActivity(), "Failed to search for places: ${exception.message}", Toast.LENGTH_SHORT).show()
                         }
                 }
                 return false
@@ -122,46 +132,45 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         })
     }
 
-    /**
-     * Requests location permissions if not already granted.
-     */
     private fun requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_CODE)
+                requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_CODE)
         } else {
             getLocation()
         }
     }
 
-    /**
-     * Retrieves the current location of the device.
-     */
     private fun getLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            val task: Task<Location> = fusedClient.lastLocation
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("LocationPermission", "Requesting Location Permissions")
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_CODE)
+            return
+        }
 
-            task.addOnSuccessListener(OnSuccessListener { location ->
-                if (location != null) {
-                    currentLocation = location
-                    val supportMapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-                    supportMapFragment?.getMapAsync(this@MapsActivity)
+        Log.d("LocationStatus", "Permissions granted, fetching location...")
+        fusedClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                Log.d("LocationStatus", "Location retrieved: Lat ${location.latitude}, Long ${location.longitude}")
+                currentLocation = location
+                if (this::gMap.isInitialized) {
+                    updateMapLocation()
                 }
-            })
+            } else {
+                Log.d("LocationStatus", "Location is null")
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("LocationError", "Failed to get location: ${exception.message}")
         }
     }
 
-    /**
-     * Called when the map is ready to be used. Sets the map to the current location and adds a marker.
-     */
-    override fun onMapReady(googleMap: GoogleMap) {
-        gMap = googleMap
+
+    private fun updateMapLocation() {
         if (currentLocation != null) {
             val latLng = LatLng(currentLocation!!.latitude, currentLocation!!.longitude)
-            val geocoder = Geocoder(this, Locale.getDefault())
+            val geocoder = Geocoder(requireActivity(), Locale.getDefault())
             val addressList: List<Address>?
             var addressText = "My Current Location"
             try {
@@ -173,21 +182,49 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 e.printStackTrace()
             }
 
-            val markerOptions = MarkerOptions().position(latLng).title(addressText)
+            val markerOptions = MarkerOptions().position(latLng).title(addressText).snippet(addressText)
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+            currentLocationMarker?.remove()
             currentLocationMarker = gMap.addMarker(markerOptions)
             gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
         }
+    }
+
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        gMap = googleMap
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            gMap.isMyLocationEnabled = true
+            gMap.uiSettings.isMyLocationButtonEnabled = true
+            fusedClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    currentLocation = location
+                    updateMapLocation()
+                }
+            }
+        }
+
+        gMap.setOnMarkerClickListener { marker ->
+            // Retrieve the title and snippet of the clicked marker
+            val title = marker.title
+            val snippet = marker.snippet
+
+            // Display the title and snippet in a custom info window
+            marker.showInfoWindow()
+
+            // Return true to indicate that the click event has been handled
+            true
+        }
 
         gMap.setOnMapClickListener { clickedLatLng ->
-            val geocoder = Geocoder(this, Locale.getDefault())
+            val geocoder = Geocoder(requireActivity(), Locale.getDefault())
             try {
                 val addressList: List<Address>? = geocoder.getFromLocation(clickedLatLng.latitude, clickedLatLng.longitude, 1)
                 if (addressList != null && addressList.isNotEmpty()) {
                     val address = addressList[0]
                     val addressText = address.getAddressLine(0)
                     otherLocationMarker?.remove()
-                    val markerOptions = MarkerOptions().position(clickedLatLng).title(addressText)
+                    val markerOptions = MarkerOptions().position(clickedLatLng).title(addressText).snippet(addressText)
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 
                     gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clickedLatLng, 18f), object : GoogleMap.CancelableCallback {
@@ -198,7 +235,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                         override fun onCancel() {}
                     })
 
-                    Toast.makeText(this, addressText, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(), addressText, Toast.LENGTH_SHORT).show()
                 }
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -206,17 +243,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         }
     }
 
-    /**
-     * Handles the result of the location permission request.
-     */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLocation()
-            } else {
-                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
+        if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getLocation()
         }
     }
 }
