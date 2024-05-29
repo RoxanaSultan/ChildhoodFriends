@@ -16,4 +16,5 @@
     <string name="email">Email</string>
     <string name="age">Age</string>
     <string name="save_changes">Save Changes</string>
+    <string name="phone_number">Phone Number</string>
 </resources>

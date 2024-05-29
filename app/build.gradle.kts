@@ -71,4 +71,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation("com.google.android.libraries.places:places:2.4.0")
 
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+
 }
