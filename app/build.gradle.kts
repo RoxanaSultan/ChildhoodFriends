@@ -38,6 +38,9 @@ android {
     buildFeatures {
         buildConfig = true
     }
+    packaging {
+        jniLibs.pickFirsts.add("lib/**/libc++_shared.so")
+    }
 }
 
 dependencies {
@@ -70,5 +73,12 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation("com.google.android.libraries.places:places:2.4.0")
+
+    val version = "1.4.0"
+    implementation("com.tomtom.sdk.maps:map-display:$version")
+    implementation("com.tomtom.sdk.search:search:$version")
+    implementation("com.tomtom.online:sdk-maps:2.4712")
+    implementation("com.tomtom.online:sdk-search:2.4712")
+    implementation("com.tomtom.online:sdk-routing:2.4712")
 
 }

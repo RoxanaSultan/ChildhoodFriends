@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.cst.cstacademy2024.helpers.extensions.logErrorMessage
-
+import com.tomtom.sdk.map.display.MapOptions
+import com.tomtom.sdk.map.display.ui.MapFragment
 class MainActivity : AppCompatActivity() {
 
+    private val APIKEY = "9GGHFlB7QRocXuI0iRLsUMd0EypFEaKI"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -30,6 +32,9 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.nav_account
         }
+
+        val mapOptions = MapOptions(mapKey = APIKEY)
+        val mapFragment = MapFragment.newInstance(mapOptions)
     }
 
     override fun onStart() {
