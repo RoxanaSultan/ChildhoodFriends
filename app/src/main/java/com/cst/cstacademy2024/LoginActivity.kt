@@ -12,6 +12,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var username: EditText
     private lateinit var password: EditText
     private lateinit var loginButton: Button
+    private lateinit var registerButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,6 +21,7 @@ class LoginActivity : AppCompatActivity() {
         username = findViewById(R.id.username)
         password = findViewById(R.id.password)
         loginButton = findViewById(R.id.login_button)
+        registerButton = findViewById(R.id.register_button)
 
         loginButton.setOnClickListener {
             val user = username.text.toString()
@@ -32,6 +34,11 @@ class LoginActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        registerButton.setOnClickListener {
+            val intent = Intent(this@LoginActivity, RegisterFragment::class.java)
+            startActivity(intent)
         }
     }
 }
