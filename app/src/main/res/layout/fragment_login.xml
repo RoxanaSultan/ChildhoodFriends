@@ -6,30 +6,30 @@
 
     <EditText
         app:layout_constraintVertical_chainStyle="packed"
-        android:id="@+id/et_user_name"
+        android:id="@+id/et_user_name_login"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/et_password"
+        app:layout_constraintBottom_toTopOf="@id/et_password_login"
         app:layout_constraintWidth_percent="0.8"
         android:hint="@string/user_name"
         android:layout_marginBottom="16dp"/>
 
     <EditText
-        android:id="@+id/et_password"
+        android:id="@+id/et_password_login"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/et_user_name"
-        app:layout_constraintBottom_toTopOf="@id/btn_id"
+        app:layout_constraintTop_toBottomOf="@id/et_user_name_login"
+        app:layout_constraintBottom_toTopOf="@id/btn_login"
         app:layout_constraintWidth_percent="0.8"
         android:hint="@string/password"/>
 
     <Button
-        android:id="@+id/btn_id"
+        android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"

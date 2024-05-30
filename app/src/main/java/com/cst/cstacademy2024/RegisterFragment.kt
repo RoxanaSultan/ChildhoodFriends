@@ -6,28 +6,55 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.cst.cstacademy2024.models.PlaceUser
+import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
+import com.cst.cstacademy2024.viewModels.UserViewModel
 
 class RegisterFragment : Fragment() {
+
+    private lateinit var userViewModel: UserViewModel
+    private lateinit var placeUserViewModel: PlaceUserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_register, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Find the Sign In button by its ID
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
+
+        val usernameField: EditText = view.findViewById(R.id.et_username)
+        val passwordField: EditText = view.findViewById(R.id.et_password)
+        val firstNameField: EditText = view.findViewById(R.id.et_firstname)
+        val lastNameField: EditText = view.findViewById(R.id.et_lastname)
+        val emailField: EditText = view.findViewById(R.id.et_email)
+        val phoneField: EditText = view.findViewById(R.id.et_phone)
         val signInButton: Button = view.findViewById(R.id.btn_signin)
 
-        // Set an OnClickListener on the Sign In button
         signInButton.setOnClickListener {
-            // Create an Intent to start MainActivity
+            val username = usernameField.text.toString()
+            val password = passwordField.text.toString()
+            val firstName = firstNameField.text.toString()
+            val lastName = lastNameField.text.toString()
+            val email = emailField.text.toString()
+            val phone = phoneField.text.toString()
+
+            val user = User(username = username, password = password, firstName = firstName, lastName = lastName, email = email, phone = phone)
+
+            userViewModel.insertUser(user)
+
+            // Trimite obiectul User către MainActivity
             val intent = Intent(activity, MainActivity::class.java)
+            intent.putExtra("USER", user) // Trimite obiectul User către MainActivity
             startActivity(intent)
         }
     }

@@ -6,39 +6,23 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var username: EditText
-    private lateinit var password: EditText
-    private lateinit var loginButton: Button
-    private lateinit var registerButton: Button
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        username = findViewById(R.id.username)
-        password = findViewById(R.id.password)
-        loginButton = findViewById(R.id.login_button)
-        registerButton = findViewById(R.id.register_button)
+        // Găsește NavHostFragment și inițializează NavController
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
-        loginButton.setOnClickListener {
-            val user = username.text.toString()
-            val pass = password.text.toString()
-
-            if (user == "user" && pass == "password") { // Simple check for example
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                startActivity(intent)
-                finish() // Close login activity
-            } else {
-                Toast.makeText(this, "Invalid credentials", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        registerButton.setOnClickListener {
-            val intent = Intent(this@LoginActivity, RegisterFragment::class.java)
-            startActivity(intent)
-        }
     }
+
 }
+

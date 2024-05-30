@@ -5,11 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.cst.cstacademy2024.models.User
 
 class AccountFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_account, container, false)
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_account, container, false)
+
+        // Afișează datele utilizatorului în interfață
+        val user = arguments?.getSerializable("USER") as? User
+        user?.let {
+            view.findViewById<TextView>(R.id.email).text = "Email: ${user.email}"
+            view.findViewById<TextView>(R.id.first_name).text = "First Name: ${user.firstName}"
+            view.findViewById<TextView>(R.id.last_name).text = "Last Name: ${user.lastName}"
+            view.findViewById<TextView>(R.id.phone_number).text = "Phone: ${user.phone}"
+        }
+
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -23,6 +37,8 @@ class AccountFragment : Fragment(){
             transaction?.addToBackStack(null)  // Optional: Adds the transaction to the back stack
             transaction?.commit()
         }
+
+
     }
 
 }

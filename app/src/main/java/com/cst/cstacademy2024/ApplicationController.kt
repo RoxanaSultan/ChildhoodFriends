@@ -2,7 +2,7 @@ package com.cst.cstacademy2024
 
 import android.app.Application
 import androidx.room.Room
-import com.cst.cstacademy2024.data.AppDatabase
+import com.cst.cstacademy2024.database.AppDatabase
 
 class ApplicationController : Application() {
 
