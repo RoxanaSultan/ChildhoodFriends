@@ -1,5 +1,6 @@
 package com.cst.cstacademy2024
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -17,20 +19,28 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.cst.cstacademy2024.database.AppDatabase
 import com.cst.cstacademy2024.helpers.extensions.VolleyRequestQueue
 import com.cst.cstacademy2024.helpers.extensions.logErrorMessage
 import com.cst.cstacademy2024.models.LoginModel
+import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.repositories.UserRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class LoginFragment : Fragment() {
 
     private lateinit var navController: NavController
+    private lateinit var userRepository : UserRepository
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        userRepository = UserRepository(AppDatabase.getDatabase(requireContext()).userDao())
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
@@ -54,48 +64,31 @@ class LoginFragment : Fragment() {
 
 	
     private fun doLogin() {
+        val username = view?.findViewById<EditText>(R.id.et_user_name_login)?.text?.toString() ?: ""
+        val password = view?.findViewById<EditText>(R.id.et_password_login)?.text?.toString() ?: ""
 
-        return
+        GlobalScope.launch(Dispatchers.IO) {
+            val userExists = userRepository.checkUserExists(username, password)
+            withContext(Dispatchers.Main) {
+                if (userExists) {
+                    // User exists, navigate to MainActivity
+                    val user = userRepository.getUser(username, password)
+                    navigateToMainActivity(user)
+                } else {
+                    // Show error message or handle login failure
+                    Toast.makeText(requireContext(), "Invalid credentials", Toast.LENGTH_SHORT).show()
+                }
+            }
 
 
-//
-//        val username = view?.findViewById<EditText>(R.id.et_user_name)?.text?.toString() ?: ""
-//        val password = view?.findViewById<EditText>(R.id.et_password)?.text?.toString() ?: ""
-//        val loginModel = when (BuildConfig.DEBUG) {
-//            true -> LoginModel("mor_2314", "83r5^_")
-//            false -> LoginModel(username, password)
-//        }
-//        // Call the login method from the view model
-//
-//        val url = "https://fakestoreapi.com/auth/login"
-//
-//        val stringRequest = object: StringRequest(
-//            Request.Method.POST,
-//            url,
-//            Response.Listener<String> { response ->
-//                "Success".logErrorMessage()
-//                val jsonResponse = JSONObject(response)
-//                try {
-//                    val token = jsonResponse.getString("token")
-//                    "Token: $token".logErrorMessage()
-//                    goToProductList(token)
-//                } catch (e: Exception) {
-//                    e.message?.logErrorMessage()
-//                }
-//            },
-//            Response.ErrorListener {
-//                "Error".logErrorMessage()
-//            }) {
-//            override fun getParams(): MutableMap<String, String> {
-//                val params = HashMap<String, String>()
-//                params["username"] = loginModel.username
-//                params["password"] = loginModel.password
-//                return params
-//            }
-//
-//        }
-//
-//        VolleyRequestQueue.addToRequestQueue(stringRequest)
+        }
+    }
+
+    private fun navigateToMainActivity(user: User?) {
+        val intent = Intent(requireContext(), MainActivity::class.java)
+        intent.putExtra("USER", user)
+        startActivity(intent)
+        requireActivity().finish() // Close login activity
     }
 
 

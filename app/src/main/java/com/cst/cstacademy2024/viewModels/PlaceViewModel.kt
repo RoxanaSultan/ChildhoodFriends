@@ -8,21 +8,28 @@ import androidx.lifecycle.viewModelScope
 import com.cst.cstacademy2024.database.AppDatabase
 import com.cst.cstacademy2024.database.PlaceDao
 import com.cst.cstacademy2024.models.Place
+import com.cst.cstacademy2024.repositories.PlaceRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PlaceViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val placeDao: PlaceDao = AppDatabase.getDatabase(application).placeDao()
+//    private val placeDao: PlaceDao = AppDatabase.getDatabase(application).placeDao()
+    private val placeRepository: PlaceRepository
+
+    init {
+        val placeDao = AppDatabase.getDatabase(application).placeDao()
+        placeRepository = PlaceRepository(placeDao)
+    }
 
     fun insertPlace(place: Place) {
         viewModelScope.launch(Dispatchers.IO) {
-            placeDao.insertPlace(place)
+            placeRepository.insertPlace(place)
         }
     }
     fun getAllPlaces(): LiveData<List<Place>> {
         return liveData(Dispatchers.IO) {
-            emit(placeDao.getAllPlaces())
+            emit(placeRepository.getAllPlaces())
         }
     }
 }

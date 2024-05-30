@@ -9,22 +9,29 @@ import androidx.lifecycle.viewModelScope
 import com.cst.cstacademy2024.database.AppDatabase
 import com.cst.cstacademy2024.database.UserDao
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val userDao: UserDao = AppDatabase.getDatabase(application).userDao()
+    private val userRepository: UserRepository
+
+    init {
+        val userDao = AppDatabase.getDatabase(application).userDao()
+        userRepository = UserRepository(userDao)
+    }
 
     fun insertUser(user: User) {
         viewModelScope.launch(Dispatchers.IO) {
-            userDao.insertUser(user)
+            userRepository.insertUser(user)
         }
     }
 
     fun getUser(username: String, password: String): LiveData<User?> {
         return liveData(Dispatchers.IO) {
-            emit(userDao.getUser(username, password))
+            emit(userRepository.getUser(username, password))
         }
     }
+
 }

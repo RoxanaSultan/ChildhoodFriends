@@ -17,10 +17,10 @@ class AccountFragment : Fragment(){
         // Afișează datele utilizatorului în interfață
         val user = arguments?.getSerializable("USER") as? User
         user?.let {
-            view.findViewById<TextView>(R.id.email).text = "Email: ${user.email}"
-            view.findViewById<TextView>(R.id.first_name).text = "First Name: ${user.firstName}"
-            view.findViewById<TextView>(R.id.last_name).text = "Last Name: ${user.lastName}"
-            view.findViewById<TextView>(R.id.phone_number).text = "Phone: ${user.phone}"
+            view.findViewById<TextView>(R.id.email).text = user.email
+            view.findViewById<TextView>(R.id.first_name).text = user.firstName
+            view.findViewById<TextView>(R.id.last_name).text = user.lastName
+            view.findViewById<TextView>(R.id.phone_number).text = user.phone
         }
 
         return view

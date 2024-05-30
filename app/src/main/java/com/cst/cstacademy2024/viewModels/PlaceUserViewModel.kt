@@ -10,22 +10,28 @@ import com.cst.cstacademy2024.database.AppDatabase
 import com.cst.cstacademy2024.database.PlaceUserDao
 import com.cst.cstacademy2024.models.PlaceUser
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.repositories.PlaceUserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PlaceUserViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val placeUserDao: PlaceUserDao = AppDatabase.getDatabase(application).placeUserDao()
+    //private val placeUserDao: PlaceUserDao = AppDatabase.getDatabase(application).placeUserDao()
 
+    private val placeUserRepository: PlaceUserRepository
+    init {
+        val placeUserDao = AppDatabase.getDatabase(application).placeUserDao()
+        placeUserRepository = PlaceUserRepository(placeUserDao)
+    }
     fun insertPlaceUser(placeUser: PlaceUser) {
         viewModelScope.launch(Dispatchers.IO) {
-            placeUserDao.insertPlaceUser(placeUser)
+            placeUserRepository.insertPlaceUser(placeUser)
         }
     }
 
     fun getPlacesByUserId(userId: Int): LiveData<List<Int>> {
         return liveData(Dispatchers.IO) {
-            emit(placeUserDao.getPlacesByUserId(userId))
+            emit(placeUserRepository.getPlacesByUserId(userId))
         }
     }
 }
