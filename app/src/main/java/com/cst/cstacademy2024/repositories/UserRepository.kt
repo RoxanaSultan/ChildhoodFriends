@@ -18,5 +18,8 @@ class UserRepository(private val userDao: UserDao) {
         return user != null
     }
 
+    suspend fun getUsersByCategoryPlace(category: String, place: String): List<User> {
+        return userDao.getUsersByCategoryPlace(category, place)
+    }
     // Add other repository methods as needed
 }
