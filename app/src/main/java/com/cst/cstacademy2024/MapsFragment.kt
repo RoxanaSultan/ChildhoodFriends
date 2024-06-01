@@ -1,6 +1,7 @@
 package com.cst.cstacademy2024
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -10,11 +11,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import com.cst.cstacademy2024.viewModels.UserViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -45,6 +48,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private val REQUEST_CODE = 101
     private lateinit var searchView: SearchView
     private lateinit var placesClient: PlacesClient
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,7 +73,32 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         val supportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         supportMapFragment?.getMapAsync(this)
         setupSearchView()
+        view.findViewById<Button>(R.id.btnAddLocation).setOnClickListener {
+            showCategorySelectionDialog()
+        }
     }
+
+    private fun showCategorySelectionDialog() {
+        val categories = arrayOf("School", "High School", "College", "Street", "Favourite Places")
+
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Select Category")
+        builder.setItems(categories) { dialog, which ->
+            val selectedCategory = categories[which]
+
+            // Check if otherLocationMarker is not null
+            if (otherLocationMarker != null) {
+                // Code for adding the place to the database
+                } else {
+                Toast.makeText(requireContext(), "Please select a location first", Toast.LENGTH_SHORT).show()
+            }
+
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
 
     private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

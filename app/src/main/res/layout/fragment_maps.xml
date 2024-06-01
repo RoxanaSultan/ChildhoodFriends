@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MapsFragment"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MapsFragment">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
@@ -16,17 +16,27 @@
         tools:layout="@layout/fragment_maps" />
 
     <androidx.appcompat.widget.SearchView
+        android:id="@+id/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:id="@+id/search"
         app:iconifiedByDefault="false"
         app:queryHint="Search location"
         android:focusable="false"
         app:closeIcon="@drawable/baseline_clear_24"
         android:background="@drawable/lavender_border"/>
 
+    <android.widget.Button
+        android:id="@+id/btnAddLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Location"
+        android:layout_below="@id/search"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:onClick="onAddLocationClicked" />
 
 </RelativeLayout>
