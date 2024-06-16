@@ -32,4 +32,16 @@ class PlaceViewModel(application: Application) : AndroidViewModel(application) {
             emit(placeRepository.getAllPlaces())
         }
     }
+
+    fun getPlace(name: String, location: String): LiveData<Int> {
+        return liveData(Dispatchers.IO) {
+            emit(placeRepository.getPlace(name, location))
+        }
+    }
+
+    fun getPlaceById(id: Int): LiveData<Place> {
+        return liveData(Dispatchers.IO) {
+            emit(placeRepository.getPlaceById(id))
+        }
+    }
 }

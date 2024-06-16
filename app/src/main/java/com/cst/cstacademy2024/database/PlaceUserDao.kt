@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.cst.cstacademy2024.models.Place
 import com.cst.cstacademy2024.models.PlaceUser
 
 @Dao
@@ -21,4 +22,7 @@ interface PlaceUserDao {
     suspend fun getPlaceUsersByPlaceId(placeId: Int): List<PlaceUser>
     @Query("SELECT placeId FROM places_users WHERE userId = :userId")
     suspend fun getPlacesByUserId(userId: Int): List<Int>
+
+    @Query("SELECT placeId FROM places_users WHERE category = :category")
+    suspend fun getPlacesByCategory(category:String): List<Int>
 }

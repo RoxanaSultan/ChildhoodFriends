@@ -1,5 +1,6 @@
 package com.cst.cstacademy2024
 
+import MyPlacesFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View

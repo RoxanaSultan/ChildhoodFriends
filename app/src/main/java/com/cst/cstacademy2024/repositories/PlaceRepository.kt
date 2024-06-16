@@ -9,12 +9,20 @@ class PlaceRepository(private val placeDao: PlaceDao) {
             placeDao.insertPlace(place)
         }
 
-        suspend fun getPlace(id: Int): Place? {
-            return placeDao.getPlace(id)
-        }
+//        suspend fun getPlace(id: Int): Place? {
+//            return placeDao.getPlace(id)
+//        }
+
+    suspend fun getPlace(name: String, location: String): Int {
+        return placeDao.getPlaceId(name, location)
+    }
 
         suspend fun getAllPlaces(): List<Place> {
             return placeDao.getAllPlaces()
+        }
+
+        suspend fun getPlaceById(id: Int): Place {
+            return placeDao.getPlaceById(id)
         }
 
         // Add other repository methods as needed

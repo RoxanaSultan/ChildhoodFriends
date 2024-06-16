@@ -35,7 +35,17 @@ class MainActivity : AppCompatActivity() {
                     fragment
                 }
                 R.id.nav_search -> SearchFragment()
-                R.id.nav_maps -> MapsFragment()
+                R.id.nav_maps -> {
+                    // Creează un nou fragment de AccountFragment
+                    val fragment = MapsFragment()
+
+                    // Trimite obiectul User către fragment folosind setArguments()
+                    val bundle = Bundle()
+                    bundle.putSerializable("USER", user)
+                    fragment.arguments = bundle
+
+                    fragment
+                }
                 else -> AccountFragment()
             }
             supportFragmentManager.beginTransaction()

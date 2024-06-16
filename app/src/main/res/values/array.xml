@@ -4,7 +4,7 @@
         <item>School</item>
         <item>High School</item>
         <item>College</item>
-        <item>Street</item>
+        <item>Address</item>
         <item>Favourite Places</item>
     </string-array>
 </resources>

@@ -17,6 +17,12 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import com.cst.cstacademy2024.models.PlaceUser
+import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
+import com.cst.cstacademy2024.viewModels.PlaceViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -30,11 +36,13 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
+import com.cst.cstacademy2024.models.Place as MyPlace
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale
 
@@ -49,12 +57,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var searchView: SearchView
     private lateinit var placesClient: PlacesClient
     private lateinit var userViewModel: UserViewModel
+    private lateinit var placeViewModel: PlaceViewModel
+    private lateinit var placeUserViewModel: PlaceUserViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
+        placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
+        placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
+        // Get the current user
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
         Places.initialize(requireActivity(), getString(R.string.google_maps_key))
         placesClient = Places.createClient(requireActivity())
@@ -85,12 +99,60 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         builder.setTitle("Select Category")
         builder.setItems(categories) { dialog, which ->
             val selectedCategory = categories[which]
+            val marker = if (otherLocationMarker != null) otherLocationMarker else currentLocationMarker
 
-            // Check if otherLocationMarker is not null
-            if (otherLocationMarker != null) {
-                // Code for adding the place to the database
-                } else {
-                Toast.makeText(requireContext(), "Please select a location first", Toast.LENGTH_SHORT).show()
+            if (marker != null) {
+                // Get the location details
+                val placeName = marker?.title ?: "Unknown Place"
+                val latLng = marker?.position
+                val location = "${latLng?.latitude},${latLng?.longitude}"
+
+                // Create a Place object
+                val place = MyPlace(
+                    name = placeName,
+                    location = location
+                )
+
+                //Insert the Place object into the database and get the generated ID
+                lifecycleScope.launch {
+                    placeViewModel.insertPlace(place)
+                    val placeIdLiveData = placeViewModel.getPlace(placeName, location)
+                    placeIdLiveData.observe(viewLifecycleOwner) { placeId ->
+                        placeIdLiveData.removeObservers(viewLifecycleOwner) // Remove observer after getting value
+
+                        if (placeId != null && placeId > 0) {
+                            // Create a PlaceUser object with the correct placeId
+                            val user = arguments?.getSerializable("USER") as? User
+                            if (user != null) {
+                                val placeUser = PlaceUser(
+                                    placeId = placeId,
+                                    userId = user.id,
+                                    category = selectedCategory
+                                )
+
+                                // Insert the PlaceUser object into the database
+                                placeUserViewModel.insertPlaceUser(placeUser)
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Location added successfully!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "User information is missing.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "Error adding location. Place could not be inserted.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             }
 
             dialog.dismiss()
@@ -98,6 +160,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         val dialog = builder.create()
         dialog.show()
     }
+
+
 
 
     private fun setupSearchView() {
