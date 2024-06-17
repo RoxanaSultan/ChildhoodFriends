@@ -69,10 +69,10 @@ class MyPlacesFragment : Fragment() {
         recyclerViewCollege.adapter = adapterCollege
         recyclerViewFavouritePlaces.adapter = adapterFavouritePlaces
 
-        //loadData("Address")
-        loadData("School")
-        loadData("High School")
-        loadData("College")
+        loadData("Addresses")
+        loadData("Schools")
+        loadData("High Schools")
+        loadData("Colleges")
         loadData("Favourite Places")
     }
 
@@ -87,13 +87,11 @@ class MyPlacesFragment : Fragment() {
                     place?.let {
                         // Add the Place object to the list when it's available
                         places.add(place)
-
-                        // Update the corresponding adapter based on category
                         when (category) {
-                            "Address" -> adapterAddress.updateList(places)
-                            "School" -> adapterSchool.updateList(places)
-                            "High School" -> adapterHighSchool.updateList(places)
-                            "College" -> adapterCollege.updateList(places)
+                            "Addresses" -> adapterAddress.updateList(places)
+                            "Schools" -> adapterSchool.updateList(places)
+                            "High Schools" -> adapterHighSchool.updateList(places)
+                            "Colleges" -> adapterCollege.updateList(places)
                             "Favourite Places" -> adapterFavouritePlaces.updateList(places)
                             // Add other categories as needed
                         }

@@ -93,7 +93,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun showCategorySelectionDialog() {
-        val categories = arrayOf("School", "High School", "College", "Street", "Favourite Places")
+        val categories = arrayOf("Addresses", "Schools", "High Schools", "Colleges", "Favourite Places")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Select Category")

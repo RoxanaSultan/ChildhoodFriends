@@ -6,91 +6,97 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:ignore="MissingConstraints">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-        <!-- Address RecyclerView with Title -->
-<!--        <TextView-->
-<!--            android:id="@+id/text_address"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Address"-->
-<!--            android:textSize="17sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:padding="16dp" />-->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_address"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true" />
+            android:orientation="vertical">
 
-        <!-- School RecyclerView with Title -->
-<!--        <TextView-->
-<!--            android:id="@+id/text_school"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="School"-->
-<!--            android:textSize="17sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:padding="16dp" />-->
+            <!-- Address RecyclerView with Title -->
+            <TextView
+                android:id="@+id/text_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Addresses"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:padding="16dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_school"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
-        <!-- High School RecyclerView with Title -->
-<!--        <TextView-->
-<!--            android:id="@+id/text_high_school"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="High School"-->
-<!--            android:textSize="17sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:padding="16dp" />-->
+            <!-- School RecyclerView with Title -->
+            <TextView
+                android:id="@+id/text_school"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Schools"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:padding="16dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_high_school"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_school"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
-        <!-- College RecyclerView with Title -->
-<!--        <TextView-->
-<!--            android:id="@+id/text_college"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="College"-->
-<!--            android:textSize="17sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:padding="16dp" />-->
+            <!-- High School RecyclerView with Title -->
+            <TextView
+                android:id="@+id/text_high_school"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="High Schools"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:padding="16dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_college"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_high_school"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
-        <!-- Favorite Places RecyclerView with Title -->
-<!--        <TextView-->
-<!--            android:id="@+id/text_favourite_places"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="Favorite Places"-->
-<!--            android:textSize="17sp"-->
-<!--            android:textStyle="bold"-->
-<!--            android:padding="16dp" />-->
+            <!-- College RecyclerView with Title -->
+            <TextView
+                android:id="@+id/text_college"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Colleges"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:padding="16dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_favourite_places"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="true" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_college"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
 
-    </LinearLayout>
+            <!-- Favorite Places RecyclerView with Title -->
+            <TextView
+                android:id="@+id/text_favourite_places"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Favorite Places"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:padding="16dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_favourite_places"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
