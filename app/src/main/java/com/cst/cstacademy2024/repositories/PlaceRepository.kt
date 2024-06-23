@@ -25,5 +25,9 @@ class PlaceRepository(private val placeDao: PlaceDao) {
             return placeDao.getPlaceById(id)
         }
 
+    suspend fun deletePlace(id: Int) {
+        placeDao.deletePlace(id)
+    }
+
         // Add other repository methods as needed
 }

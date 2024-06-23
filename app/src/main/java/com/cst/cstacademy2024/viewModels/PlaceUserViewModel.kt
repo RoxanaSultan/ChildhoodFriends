@@ -40,4 +40,10 @@ class PlaceUserViewModel(application: Application) : AndroidViewModel(applicatio
             emit(placeUserRepository.getPlacesByCategory(category))
         }
     }
+
+    fun deletePlaceUser(placeId: Int, userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            placeUserRepository.deletePlaceUser(placeId, userId)
+        }
+    }
 }

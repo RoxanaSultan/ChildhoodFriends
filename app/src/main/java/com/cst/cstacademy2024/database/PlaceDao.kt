@@ -22,4 +22,7 @@ interface PlaceDao {
 
     @Query("SELECT * FROM places WHERE id = :id")
     suspend fun getPlaceById(id: Int): Place
+
+    @Query("DELETE FROM places WHERE id = :id")
+    suspend fun deletePlace(id: Int)
 }

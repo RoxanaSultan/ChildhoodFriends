@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class PlaceViewModel(application: Application) : AndroidViewModel(application) {
 
-//    private val placeDao: PlaceDao = AppDatabase.getDatabase(application).placeDao()
+    //    private val placeDao: PlaceDao = AppDatabase.getDatabase(application).placeDao()
     private val placeRepository: PlaceRepository
 
     init {
@@ -42,6 +42,12 @@ class PlaceViewModel(application: Application) : AndroidViewModel(application) {
     fun getPlaceById(id: Int): LiveData<Place> {
         return liveData(Dispatchers.IO) {
             emit(placeRepository.getPlaceById(id))
+        }
+    }
+
+    fun deletePlace(id: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            placeRepository.deletePlace(id)
         }
     }
 }

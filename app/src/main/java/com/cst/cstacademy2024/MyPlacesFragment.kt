@@ -6,9 +6,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.cst.cstacademy2024.MyPlacesAdapter
 import com.cst.cstacademy2024.R
 import com.cst.cstacademy2024.models.Place
+import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
 import com.cst.cstacademy2024.viewModels.PlaceViewModel
 
@@ -28,16 +28,21 @@ class MyPlacesFragment : Fragment() {
 
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var placeUserViewModel: PlaceUserViewModel
+    private var user: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Retrieve the User object from the arguments
+        user = arguments?.getSerializable("USER") as? User
         return inflater.inflate(R.layout.fragment_my_places, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Initialize ViewModels
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
         placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
 
@@ -55,12 +60,12 @@ class MyPlacesFragment : Fragment() {
         recyclerViewCollege.layoutManager = LinearLayoutManager(requireContext())
         recyclerViewFavouritePlaces.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initialize adapters
-        adapterAddress = MyPlacesAdapter(listOf())  // Initialize with empty list
-        adapterSchool = MyPlacesAdapter(listOf())   // Initialize with empty list
-        adapterHighSchool = MyPlacesAdapter(listOf()) // Initialize with empty list
-        adapterCollege = MyPlacesAdapter(listOf())   // Initialize with empty list
-        adapterFavouritePlaces = MyPlacesAdapter(listOf()) // Initialize with empty list
+        // Initialize adapters with lambdas
+        adapterAddress = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
+        adapterSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
+        adapterHighSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
+        adapterCollege = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
+        adapterFavouritePlaces = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
 
         // Set adapters to RecyclerViews
         recyclerViewAddress.adapter = adapterAddress
@@ -69,6 +74,7 @@ class MyPlacesFragment : Fragment() {
         recyclerViewCollege.adapter = adapterCollege
         recyclerViewFavouritePlaces.adapter = adapterFavouritePlaces
 
+        // Load data for each category
         loadData("Addresses")
         loadData("Schools")
         loadData("High Schools")
@@ -76,16 +82,19 @@ class MyPlacesFragment : Fragment() {
         loadData("Favourite Places")
     }
 
+    private fun onDeleteClick(place: Place) {
+        user?.let {
+            placeUserViewModel.deletePlaceUser(place.id, it.id)
+            placeViewModel.deletePlace(place.id)
+        }
+    }
+
     private fun loadData(category: String) {
         placeUserViewModel.getPlacesByCategory(category).observe(viewLifecycleOwner) { placesUser ->
             val places = mutableListOf<Place>()
-
-            // Iterate through place IDs
             for (placeId in placesUser) {
-                // Observe the LiveData<Place> for each placeId
                 placeViewModel.getPlaceById(placeId).observe(viewLifecycleOwner) { place ->
                     place?.let {
-                        // Add the Place object to the list when it's available
                         places.add(place)
                         when (category) {
                             "Addresses" -> adapterAddress.updateList(places)
@@ -93,12 +102,10 @@ class MyPlacesFragment : Fragment() {
                             "High Schools" -> adapterHighSchool.updateList(places)
                             "Colleges" -> adapterCollege.updateList(places)
                             "Favourite Places" -> adapterFavouritePlaces.updateList(places)
-                            // Add other categories as needed
                         }
                     }
                 }
             }
         }
     }
-
 }

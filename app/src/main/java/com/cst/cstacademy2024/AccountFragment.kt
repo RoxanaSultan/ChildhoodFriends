@@ -10,18 +10,19 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.cst.cstacademy2024.models.User
 
+private var user: User? = null
+
 class AccountFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_account, container, false)
-
+        user = arguments?.getSerializable("USER") as? User
         // Afișează datele utilizatorului în interfață
-        val user = arguments?.getSerializable("USER") as? User
         user?.let {
-            view.findViewById<TextView>(R.id.email).text = user.email
-            view.findViewById<TextView>(R.id.first_name).text = user.firstName
-            view.findViewById<TextView>(R.id.last_name).text = user.lastName
-            view.findViewById<TextView>(R.id.phone_number).text = user.phone
+            view.findViewById<TextView>(R.id.email).text = it.email
+            view.findViewById<TextView>(R.id.first_name).text = it.firstName
+            view.findViewById<TextView>(R.id.last_name).text = it.lastName
+            view.findViewById<TextView>(R.id.phone_number).text = it.phone
         }
 
         return view
@@ -32,14 +33,15 @@ class AccountFragment : Fragment(){
 
         val myPlacesButton = view.findViewById<Button>(R.id.my_places_button)
         myPlacesButton.setOnClickListener {
-            // Perform the fragment transaction
-            val transaction = fragmentManager?.beginTransaction()
-            transaction?.replace(R.id.fragment_container, MyPlacesFragment())
-            transaction?.addToBackStack(null)  // Optional: Adds the transaction to the back stack
-            transaction?.commit()
+            val fragment = MyPlacesFragment()
+            val bundle = Bundle()
+            bundle.putSerializable("USER", user)
+            fragment.arguments = bundle
+
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.fragment_container, fragment)
+            transaction.addToBackStack(null)  // Optional: Adds the transaction to the back stack
+            transaction.commit()
         }
-
-
     }
-
 }
