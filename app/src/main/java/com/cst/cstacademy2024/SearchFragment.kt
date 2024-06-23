@@ -11,20 +11,31 @@ import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cst.cstacademy2024.FakeApiService
 import com.cst.cstacademy2024.R
 import com.cst.cstacademy2024.UsersAdapter
+import com.cst.cstacademy2024.adapters.UsersApiAdapter
 import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.UserViewModel
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchFragment : Fragment() {
     private lateinit var spinnerCategory: Spinner
     private lateinit var searchEditText: EditText
     private lateinit var recyclerView: RecyclerView
-    private lateinit var usersAdapter: UsersAdapter
+    private lateinit var usersAdapter: UsersApiAdapter
     private lateinit var userViewModel: UserViewModel
     private var usersList: List<User> = emptyList()
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://fakestoreapi.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val api = retrofit.create(FakeApiService::class.java)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,9 +88,17 @@ class SearchFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        usersAdapter = UsersAdapter(emptyList()) // Initialize with empty list
-        recyclerView.adapter = usersAdapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        lifecycleScope.launch {
+            try {
+                val users = api.getUsers()
+                usersAdapter = UsersApiAdapter(users) // Initialize with empty list
+                recyclerView.adapter = usersAdapter
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
     }
 
     private fun setupSearchEditText() {
@@ -95,10 +114,10 @@ class SearchFragment : Fragment() {
 
     private fun search(category: String, placeName: String) {
         // Call the viewModel to get the filtered users based on category and place
-        userViewModel.getUsersByCategoryPlace(category, placeName).observe(viewLifecycleOwner) { filteredUsers ->
-            // Update the RecyclerView with the filtered users
-            usersAdapter.updateList(filteredUsers)
-        }
+//        userViewModel.getUsersByCategoryPlace(category, placeName).observe(viewLifecycleOwner) { filteredUsers ->
+//            // Update the RecyclerView with the filtered users
+//            usersAdapter.updateList(filteredUsers)
+//        }
     }
 
 
