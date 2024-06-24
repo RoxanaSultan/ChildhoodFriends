@@ -41,7 +41,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun deleteUsers(users: List<User>) {
+    fun deleteUsers(users: List<UserAPI>) {
         viewModelScope.launch(Dispatchers.IO) {
             for (user in users) {
                 userRepository.deleteUser(user.id)
