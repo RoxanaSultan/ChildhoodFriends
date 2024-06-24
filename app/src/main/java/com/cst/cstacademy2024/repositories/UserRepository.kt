@@ -29,5 +29,9 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun addUser(user: User) {
         userDao.insertUser(user)
     }
+
+    suspend fun getUserById(userId: Int): User {
+        return userDao.getUserById(userId)
+    }
     // Add other repository methods as needed
 }
