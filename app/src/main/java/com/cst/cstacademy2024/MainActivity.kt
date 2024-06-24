@@ -192,27 +192,44 @@ class MainActivity : AppCompatActivity() {
                     val locationIndex = hashNameToNumber(firstname, lastname, totalLocations)
                     val assignedPlaceId = placeIds[locationIndex]
 
-                    val user2 = userViewModel.getUserById(user2Id)
-                    if (user2 != null) {
-                        val placeUser = PlaceUser(
-                            placeId = assignedPlaceId,
-                            userId = user2.id,
-                            category = placeUserViewModel.getCategoryByUserAndPlace(currentUserId, assignedPlaceId)
-                        )
+                    // Assuming userViewModel.getUserById(user2Id) returns LiveData<User>
+                    val userLiveData: LiveData<User> = userViewModel.getUserById(user2Id)
+                    userLiveData.observe(this@MainActivity, Observer { user2 ->
+                        user2?.let {
+                            // Assuming placeUserViewModel.getCategoryByUserAndPlace(currentUserId, assignedPlaceId) returns LiveData<String>
+                            val categoryLiveData: LiveData<String> = placeUserViewModel.getCategoryByUserAndPlace(currentUserId, assignedPlaceId)
+                            categoryLiveData.observe(this@MainActivity, Observer { category ->
+                                category?.let {
+                                    val placeUser = PlaceUser(
+                                        placeId = assignedPlaceId,
+                                        userId = user2.id,
+                                        category = it // Use the observed category string
+                                    )
 
-                        placeUserViewModel.insertPlaceUser(placeUser)
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Location assigned successfully to ${user2.firstName} ${user2.lastName}!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "User2 information is missing.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                                    placeUserViewModel.insertPlaceUser(placeUser)
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Location assigned successfully to ${user2.firstName} ${user2.lastName}!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } ?: run {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Category information is missing.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            })
+
+                        } ?: run {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "User2 information is missing.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+
                 } else {
                     Toast.makeText(
                         this@MainActivity,

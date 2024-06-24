@@ -36,6 +36,7 @@ class SearchFragment : Fragment() {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val api = retrofit.create(FakeApiService::class.java)
+    private lateinit var users: List<User>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,12 +51,13 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Initialize ViewModel
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         setupSpinner()
         setupRecyclerView()
         setupSearchEditText()
 
-        // Initialize ViewModel
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+
 
 //        // Observe changes in user list
 //        userViewModel.getAllUsers().observe(viewLifecycleOwner, Observer { users ->
@@ -90,8 +92,9 @@ class SearchFragment : Fragment() {
     private fun setupRecyclerView() {
         lifecycleScope.launch {
             try {
-                val users = userViewModel.getAllUsers()
-                usersAdapter = UsersAdapter(users) // Initialize with empty list
+                users = userViewModel.getAllUsers()
+                usersAdapter = UsersAdapter(usersList) // Initialize with empty list
+                usersAdapter.updateList(users)
                 recyclerView.adapter = usersAdapter
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
             } catch (e: Exception) {
