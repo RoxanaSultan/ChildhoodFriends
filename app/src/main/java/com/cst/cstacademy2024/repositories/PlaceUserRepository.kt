@@ -29,5 +29,9 @@ class PlaceUserRepository(private val placeUserDao: PlaceUserDao) {
         placeUserDao.deletePlacesAndUsers(userId)
     }
 
+    suspend fun getCategoryByUserAndPlace(userId: Int, placeId: Int): String {
+        return placeUserDao.getCategoryByUserAndPlace(userId, placeId)
+    }
+
         // Add other repository methods as needed
 }

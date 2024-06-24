@@ -55,4 +55,10 @@ class PlaceUserViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
+
+    fun getCategoryByUserAndPlace(userId: Int, placeId: Int): LiveData<String> {
+        return liveData(Dispatchers.IO) {
+            emit(placeUserRepository.getCategoryByUserAndPlace(userId, placeId))
+        }
+    }
 }
