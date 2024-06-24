@@ -1,5 +1,6 @@
 package com.cst.cstacademy2024.repositories
 
+import androidx.lifecycle.LiveData
 import com.cst.cstacademy2024.database.UserDao
 import com.cst.cstacademy2024.models.User
 
@@ -33,5 +34,8 @@ class UserRepository(private val userDao: UserDao) {
     suspend fun getUserById(userId: Int): User {
         return userDao.getUserById(userId)
     }
-    // Add other repository methods as needed
+
+    suspend fun getAllUsers(): List<User> {
+        return userDao.getAllUsers()
+    }    // Add other repository methods as needed
 }

@@ -62,4 +62,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    suspend fun getAllUsers(): List<User> {
+        return userRepository.getAllUsers()
+    }
+
 }
