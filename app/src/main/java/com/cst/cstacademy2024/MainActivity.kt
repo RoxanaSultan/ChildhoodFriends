@@ -2,23 +2,59 @@ package com.cst.cstacademy2024
 
 import SearchFragment
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.cst.cstacademy2024.adapters.UsersApiAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.cst.cstacademy2024.helpers.extensions.logErrorMessage
+import com.cst.cstacademy2024.models.PlaceUser
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.models.UserAPI
+import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
+import com.cst.cstacademy2024.viewModels.PlaceViewModel
+import com.cst.cstacademy2024.viewModels.UserViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var placeViewModel: PlaceViewModel
+    private lateinit var placeUserViewModel: PlaceUserViewModel
+    private lateinit var userViewModel: UserViewModel
+    private var user: User? = null
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://fakestoreapi.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val api = retrofit.create(FakeApiService::class.java)
+    private lateinit var usersApiList : List<UserAPI>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val user = intent.getSerializableExtra("USER") as? User
+        user = intent.getSerializableExtra("USER") as? User
         user?.let {
             // Utilizează obiectul User pentru a afișa sau pentru alte operații
-            supportActionBar?.title = "Welcome, ${user.username}!"
+            supportActionBar?.title = "Welcome, ${user!!.username}!"
         }
+
+        // Initialize ViewModels
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+        placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
+        placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
+
+        insertAPIUsers()
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -82,6 +118,109 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        deleteUsersApi()
         "onDestroy".logErrorMessage()
+    }
+
+    private fun insertAPIUsers(){
+        lifecycleScope.launch {
+            try {
+               usersApiList = api.getUsers()
+                for (userAPI in usersApiList) {
+                    userViewModel.addUser(userAPI)
+                    val userLiveData: LiveData<User?> = userViewModel.getUser(userAPI.username, userAPI.password)
+                    userLiveData.observe(this@MainActivity, Observer { userInserted ->
+                        userInserted?.let {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "User ${it.username} inserted successfully!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            //assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
+                        } ?: run {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Error inserting user. User not found.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+
+
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
+
+    fun deleteUsersApi(){
+        lifecycleScope.launch {
+            try {
+                placeUserViewModel.deletePlacesAndUsers(usersApiList)
+                userViewModel.deleteUsers(usersApiList)
+                Toast.makeText(
+                    this@MainActivity,
+                    "Users deleted successfully!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun hashNameToNumber(firstname: String, lastname: String, maxNumber: Int): Int {
+        val combined = "$firstname$lastname"
+        val digest = MessageDigest.getInstance("SHA-256")
+        val hashBytes = digest.digest(combined.toByteArray())
+        val hashCode = hashBytes.fold(0) { acc, byte -> acc * 31 + byte.toInt() }
+        return (hashCode and Int.MAX_VALUE) % maxNumber
+    }
+
+    private fun assignLocationToUser2(firstname: String, lastname: String, currentUserId: Int, user2Id: Int) {
+        GlobalScope.launch(Dispatchers.Main) {
+            val placesLiveData: LiveData<List<Int>> =
+                placeUserViewModel.getPlacesByUserId(currentUserId)
+            placesLiveData.observe(this@MainActivity, Observer { placeIds ->
+                placesLiveData.removeObservers(this@MainActivity)
+
+                if (placeIds != null && placeIds.isNotEmpty()) {
+                    val totalLocations = placeIds.size
+                    val locationIndex = hashNameToNumber(firstname, lastname, totalLocations)
+                    val assignedPlaceId = placeIds[locationIndex]
+
+                    val user2 = userViewModel.getUserById(user2Id)
+                    if (user2 != null) {
+                        val placeUser = PlaceUser(
+                            placeId = assignedPlaceId,
+                            userId = user2.id,
+                            category = placeUserViewModel.getCategoryByUserAndPlace(currentUserId, assignedPlaceId)
+                        )
+
+                        placeUserViewModel.insertPlaceUser(placeUser)
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Location assigned successfully to ${user2.firstName} ${user2.lastName}!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "User2 information is missing.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "No locations found for the current user.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+        }
     }
 }

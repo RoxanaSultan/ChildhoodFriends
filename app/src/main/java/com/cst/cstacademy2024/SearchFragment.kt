@@ -28,7 +28,7 @@ class SearchFragment : Fragment() {
     private lateinit var spinnerCategory: Spinner
     private lateinit var searchEditText: EditText
     private lateinit var recyclerView: RecyclerView
-    private lateinit var usersAdapter: UsersApiAdapter
+    private lateinit var usersAdapter: UsersAdapter
     private lateinit var userViewModel: UserViewModel
     private var usersList: List<User> = emptyList()
     private val retrofit = Retrofit.Builder()
@@ -90,8 +90,8 @@ class SearchFragment : Fragment() {
     private fun setupRecyclerView() {
         lifecycleScope.launch {
             try {
-                val users = api.getUsers()
-                usersAdapter = UsersApiAdapter(users) // Initialize with empty list
+                val users = userViewModel.getAllUsers()
+                usersAdapter = UsersAdapter(users) // Initialize with empty list
                 recyclerView.adapter = usersAdapter
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
             } catch (e: Exception) {
