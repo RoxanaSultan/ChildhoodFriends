@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.cst.cstacademy2024.models.Place
 import com.cst.cstacademy2024.models.PlaceUser
+import com.cst.cstacademy2024.models.User
 
 @Dao
 interface PlaceUserDao {
@@ -28,4 +29,7 @@ interface PlaceUserDao {
 
     @Query("DELETE FROM places_users WHERE placeId = :placeId AND userId = :userId")
     suspend fun deletePlaceUser(placeId: Int, userId: Int)
+
+    @Query("DELETE FROM places_users WHERE  userId = :userId")
+    suspend fun deletePlacesAndUsers(userId: Int)
 }

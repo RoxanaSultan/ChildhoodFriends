@@ -25,5 +25,9 @@ class PlaceUserRepository(private val placeUserDao: PlaceUserDao) {
         placeUserDao.deletePlaceUser(placeId, userId)
     }
 
+    suspend fun deletePlacesAndUsers(userId: Int) {
+        placeUserDao.deletePlacesAndUsers(userId)
+    }
+
         // Add other repository methods as needed
 }
