@@ -41,6 +41,7 @@ class SearchFragment : Fragment() {
         .build()
     private val api = retrofit.create(FakeApiService::class.java)
     private lateinit var users: List<User>
+    private var user: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +51,14 @@ class SearchFragment : Fragment() {
         spinnerCategory = view.findViewById(R.id.dropdown_menu)
         searchEditText = view.findViewById(R.id.search_bar)
         recyclerView = view.findViewById(R.id.search_results_recycler_view)
+
+        viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        viewModel.user.observe(viewLifecycleOwner) { userVM ->
+            // Update your UI here with user information
+            // For example: textView.text = user.name
+            user = userVM
+        }
         return view
     }
 
@@ -121,10 +130,12 @@ class SearchFragment : Fragment() {
 
     private fun search(category: String, placeName: String) {
         // Call the viewModel to get the filtered users based on category and place
-//        userViewModel.getUsersByCategoryPlace(category, placeName).observe(viewLifecycleOwner) { filteredUsers ->
-//            // Update the RecyclerView with the filtered users
-//            usersAdapter.updateList(filteredUsers)
-//        }
+        user?.let {
+            userViewModel.getUsersByCategoryPlace(category, placeName, it.id).observe(viewLifecycleOwner) { filteredUsers ->
+                // Update the RecyclerView with the filtered users
+                usersAdapter.updateList(filteredUsers)
+            }
+        }
     }
 
 

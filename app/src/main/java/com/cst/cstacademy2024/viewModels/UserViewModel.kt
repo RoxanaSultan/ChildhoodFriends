@@ -35,9 +35,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getUsersByCategoryPlace(category: String, place: String): LiveData<List<User>> {
+    fun getUsersByCategoryPlace(category: String, place: String, userId: Int): LiveData<List<User>> {
         return liveData(Dispatchers.IO) {
-            emit(userRepository.getUsersByCategoryPlace(category, place))
+            emit(userRepository.getUsersByCategoryPlace(category, place, userId))
         }
     }
 

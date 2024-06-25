@@ -19,8 +19,8 @@ class UserRepository(private val userDao: UserDao) {
         return user != null
     }
 
-    suspend fun getUsersByCategoryPlace(category: String, place: String): List<User> {
-        return userDao.getUsersByCategoryPlace(category, place)
+    suspend fun getUsersByCategoryPlace(category: String, place: String, userId: Int): List<User> {
+        return userDao.getUsersByCategoryPlace(category, place, userId)
     }
 
     suspend fun updateUser(id: Int, email: String, firstName: String, lastName: String, phone: String) {

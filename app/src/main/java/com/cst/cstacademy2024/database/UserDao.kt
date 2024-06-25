@@ -15,8 +15,8 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE username = :username AND password = :password")
     suspend fun getUser(username: String, password: String): User?
 
-    @Query("SELECT * FROM users INNER JOIN places_users ON users.id = places_users.userId INNER JOIN places ON places_users.placeId = places.id WHERE places.name = :place AND places_users.category = :category")
-    suspend fun getUsersByCategoryPlace(category: String, place: String): List<User>
+    @Query("SELECT * FROM users INNER JOIN places_users ON users.id = places_users.userId INNER JOIN places ON places_users.placeId = places.id WHERE places.name = :place AND places_users.category = :category AND userId != :userId")
+    suspend fun getUsersByCategoryPlace(category: String, place: String, userId: Int): List<User>
 
     @Query("UPDATE users SET email = :email, first_name = :firstName, last_name = :lastName, phone = :phone WHERE id = :id")
     suspend fun updateUser(id: Int, email: String, firstName: String, lastName: String, phone: String)
