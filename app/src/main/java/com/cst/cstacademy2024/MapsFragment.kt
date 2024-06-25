@@ -42,6 +42,7 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.Locale
@@ -116,6 +117,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 //Insert the Place object into the database and get the generated ID
                 lifecycleScope.launch {
                     placeViewModel.insertPlace(place)
+
+                    delay(500)
+                    
                     val placeIdLiveData = placeViewModel.getPlace(placeName, location)
                     placeIdLiveData.observe(viewLifecycleOwner) { placeId ->
                         placeIdLiveData.removeObservers(viewLifecycleOwner) // Remove observer after getting value
