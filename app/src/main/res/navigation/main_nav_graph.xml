@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_nav_graph"
+    app:startDestination="@id/nav_account">
+
+    <fragment
+        android:id="@+id/nav_account"
+        android:name="com.cst.cstacademy2024.AccountFragment"
+        android:label="Account"
+        tools:layout="@layout/fragment_account">
+    <action
+        android:id="@+id/action_accountPlacesFragment_to_myPlacesFragment"
+        app:destination="@id/fragment_my_places" />
+</fragment>
+
+    <fragment
+        android:id="@+id/nav_maps"
+        android:name="com.cst.cstacademy2024.MapsFragment"
+        android:label="Maps"
+        tools:layout="@layout/fragment_maps" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.cst.cstacademy2024.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search">
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_my_places"
+        android:name="com.cst.cstacademy2024.MyPlacesFragment"
+        android:label="MyPlaces"
+        tools:layout="@layout/fragment_my_places">
+    </fragment>
+
+</navigation>

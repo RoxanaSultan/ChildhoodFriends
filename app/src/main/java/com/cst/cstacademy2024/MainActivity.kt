@@ -1,14 +1,16 @@
 package com.cst.cstacademy2024
 
-import SearchFragment
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cst.cstacademy2024.adapters.UsersApiAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -18,6 +20,7 @@ import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.models.UserAPI
 import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
 import com.cst.cstacademy2024.viewModels.PlaceViewModel
+import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +31,7 @@ import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity() {
 
+    private val sharedViewModel: SharedViewModel by viewModels()
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var placeUserViewModel: PlaceUserViewModel
     private lateinit var userViewModel: UserViewModel
@@ -43,10 +47,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Receive user object passed from previous activity
         user = intent.getSerializableExtra("USER") as? User
         user?.let {
-            // Utilizează obiectul User pentru a afișa sau pentru alte operații
-            supportActionBar?.title = "Welcome, ${user!!.username}!"
+            supportActionBar?.title = "Welcome, ${it.username}!"
+            sharedViewModel.setUser(it)
         }
 
         // Initialize ViewModels
@@ -56,45 +61,28 @@ class MainActivity : AppCompatActivity() {
 
         insertAPIUsers()
 
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        val navController = navHostFragment.navController
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            val selectedFragment: Fragment = when (item.itemId) {
-                R.id.nav_account -> {
-                    // Creează un nou fragment de AccountFragment
-                    val fragment = AccountFragment()
 
-                    // Trimite obiectul User către fragment folosind setArguments()
-                    val bundle = Bundle()
-                    bundle.putSerializable("USER", user)
-                    fragment.arguments = bundle
+        // Set up Navigation Controller with Bottom Navigation View
+        bottomNavigationView.setupWithNavController(navController)
 
-                    fragment
-                }
-                R.id.nav_search -> SearchFragment()
-                R.id.nav_maps -> {
-                    // Creează un nou fragment de AccountFragment
-                    val fragment = MapsFragment()
+//        // Listen for navigation item selection if needed to pass arguments
+//        navController.addOnDestinationChangedListener { _, destination, _ ->
+//            if (destination.id == R.id.nav_account || destination.id == R.id.nav_maps) {
+//                val bundle = Bundle()
+//                bundle.putSerializable("USER", user)
+//                navController.navigate(destination.id, bundle)
+//            }
+//        }
 
-                    // Trimite obiectul User către fragment folosind setArguments()
-                    val bundle = Bundle()
-                    bundle.putSerializable("USER", user)
-                    fragment.arguments = bundle
-
-                    fragment
-                }
-                else -> AccountFragment()
-            }
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, selectedFragment)
-                .commit()
-            true
-        }
-
-        // Set default selection
+        // Optional: Set default selection
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.nav_account
         }
     }
+
 
     override fun onStart() {
         super.onStart()

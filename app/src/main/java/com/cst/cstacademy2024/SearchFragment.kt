@@ -1,3 +1,5 @@
+package com.cst.cstacademy2024
+
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,6 +21,7 @@ import com.cst.cstacademy2024.R
 import com.cst.cstacademy2024.UsersAdapter
 import com.cst.cstacademy2024.adapters.UsersApiAdapter
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -30,6 +33,7 @@ class SearchFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var usersAdapter: UsersAdapter
     private lateinit var userViewModel: UserViewModel
+    private lateinit var viewModel: SharedViewModel
     private var usersList: List<User> = emptyList()
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://fakestoreapi.com/")

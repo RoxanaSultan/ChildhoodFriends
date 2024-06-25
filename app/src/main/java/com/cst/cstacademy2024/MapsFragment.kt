@@ -23,6 +23,7 @@ import com.cst.cstacademy2024.models.PlaceUser
 import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
 import com.cst.cstacademy2024.viewModels.PlaceViewModel
+import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -59,12 +60,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var userViewModel: UserViewModel
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var placeUserViewModel: PlaceUserViewModel
+    private lateinit var viewModel: SharedViewModel
+    private var user: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_maps, container, false)
+
+        viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        viewModel.user.observe(viewLifecycleOwner) { userVM ->
+            // Update your UI here with user information
+            // For example: textView.text = user.name
+            user = userVM
+        }
+
+//        val args = MapsFragmentArgs.fromBundle(requireArguments())
+//        user = args.user
+
+
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
         placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
         // Get the current user
@@ -122,11 +138,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                         if (placeId != null && placeId > 0) {
                             // Create a PlaceUser object with the correct placeId
-                            val user = arguments?.getSerializable("USER") as? User
+                            //val user = arguments?.getSerializable("USER") as? User
                             if (user != null) {
                                 val placeUser = PlaceUser(
                                     placeId = placeId,
-                                    userId = user.id,
+                                    userId = user!!.id,
                                     category = selectedCategory
                                 )
 
