@@ -1,11 +1,13 @@
 package com.cst.cstacademy2024
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -24,7 +26,9 @@ import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.MessageDigest
@@ -59,6 +63,11 @@ class MainActivity : AppCompatActivity() {
         placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
 
+
+        user?.let {
+            placeUserViewModel.deletePlacesAndUsers(it.id)
+            //userViewModel.deleteAllUsers(it.id)
+        }
         insertAPIUsers()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
@@ -106,59 +115,88 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        deleteUsersApi()
         "onDestroy".logErrorMessage()
     }
 
-    private fun insertAPIUsers(){
+    private fun insertAPIUsers() {
         lifecycleScope.launch {
             try {
-               usersApiList = api.getUsers()
+                usersApiList = api.getUsers()
+
                 for (userAPI in usersApiList) {
-                    userViewModel.addUser(userAPI)
-                    val userLiveData: LiveData<User?> = userViewModel.getUser(userAPI.username, userAPI.password)
-                    userLiveData.observe(this@MainActivity, Observer { userInserted ->
-                        userInserted?.let {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "User ${it.username} inserted successfully!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            //assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
-                        } ?: run {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Error inserting user. User not found.",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    })
+                    delay(500)
+                    val insertedUser = withContext(Dispatchers.IO) {
+                        // Insert user into database
+                        userViewModel.addUser(userAPI)
+                        // Retrieve inserted user synchronously
+                        userViewModel.getUserSync(userAPI.username, userAPI.password)
+                    }
 
+                    insertedUser?.let {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "User ${it.username} inserted successfully!",
+                            Toast.LENGTH_SHORT
+                        ).show()
 
+                        // Delay before assigning location (if necessary)
+                        delay(500)
+
+                        // Assign location to the user
+                        assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
+                    } ?: run {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Error inserting user. User not found.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-            }
-
-        }
-    }
-
-    fun deleteUsersApi(){
-        lifecycleScope.launch {
-            try {
-                placeUserViewModel.deletePlacesAndUsers(usersApiList)
-                userViewModel.deleteUsers(usersApiList)
-                Toast.makeText(
-                    this@MainActivity,
-                    "Users deleted successfully!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("insertAPIUsers", "Error inserting or processing users: ${e.message}")
             }
         }
     }
+
+
+
+
+//    fun deleteUsersApi(){
+//        lifecycleScope.launch {
+//            try {
+//                placeUserViewModel.deletePlacesAndUsers(usersApiList)
+//                userViewModel.deleteUsers(usersApiList)
+//                Toast.makeText(
+//                    this@MainActivity,
+//                    "Users deleted successfully!",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+
+//    fun deleteUsersApi() {
+//        lifecycleScope.launch {
+//            try {
+//                placeUserViewModel.deletePlacesAndUsers(usersApiList)
+//                userViewModel.deleteUsers(usersApiList)
+//                withContext(Dispatchers.Main) {
+//                    Toast.makeText(
+//                        this@MainActivity,
+//                        "Users deleted successfully!",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
+
 
     fun hashNameToNumber(firstname: String, lastname: String, maxNumber: Int): Int {
         val combined = "$firstname$lastname"
