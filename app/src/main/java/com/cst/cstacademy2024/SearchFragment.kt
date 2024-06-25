@@ -24,8 +24,8 @@ import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.launch
-//import retrofit2.Retrofit
-//import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchFragment : Fragment() {
     private lateinit var spinnerCategory: Spinner
@@ -58,7 +58,7 @@ class SearchFragment : Fragment() {
         // Initialize ViewModel
         userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         setupSpinner()
-        //setupRecyclerView()
+        setupRecyclerView()
         setupSearchEditText()
 
 

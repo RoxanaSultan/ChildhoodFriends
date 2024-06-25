@@ -8,7 +8,9 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 
 private var user: User? = null

@@ -47,11 +47,13 @@ class MyPlacesFragment : Fragment() {
             // Update your UI here with user information
             // For example: textView.text = user.name
             user = userVM
+            // Load data for each category
+            loadData("Addresses")
+            loadData("Schools")
+            loadData("High Schools")
+            loadData("Colleges")
+            loadData("Favourite Places")
         }
-//        val args: MyPlacesFragmentArgs by navArgs()
-//        user = args.user
-        // Retrieve the User object from the arguments
-        //user = arguments?.getSerializable("USER") as? User
         return inflater.inflate(R.layout.fragment_my_places, container, false)
     }
 
@@ -89,13 +91,6 @@ class MyPlacesFragment : Fragment() {
         recyclerViewHighSchool.adapter = adapterHighSchool
         recyclerViewCollege.adapter = adapterCollege
         recyclerViewFavouritePlaces.adapter = adapterFavouritePlaces
-
-        // Load data for each category
-        loadData("Addresses")
-        loadData("Schools")
-        loadData("High Schools")
-        loadData("Colleges")
-        loadData("Favourite Places")
     }
 
     private fun onDeleteClick(place: Place) {
