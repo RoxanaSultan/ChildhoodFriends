@@ -11,19 +11,19 @@ import androidx.room.Index
         ForeignKey(
             entity = Place::class,
             parentColumns = ["id"],
-            childColumns = ["placeId"]
+            childColumns = ["placeId"],
+            onDelete = ForeignKey.NO_ACTION
         ),
         ForeignKey(
             entity = User::class,
             parentColumns = ["id"],
             childColumns = ["userId"],
-            onDelete = ForeignKey.CASCADE // Example of cascading deletion
+            onDelete = ForeignKey.CASCADE
         )
-    ],
-    indices = [Index(value = ["placeId"]), Index(value = ["userId"])]
+    ]
 )
 data class PlaceUser(
     val placeId: Int,
     val userId: Int,
-    val category: String? // Nullable String field
+    val category: String
 )

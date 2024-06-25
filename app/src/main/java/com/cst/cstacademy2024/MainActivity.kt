@@ -66,9 +66,10 @@ class MainActivity : AppCompatActivity() {
 
         user?.let {
             placeUserViewModel.deletePlacesAndUsers(it.id)
-            //userViewModel.deleteAllUsers(it.id)
+            userViewModel.deleteAllUsers(it.id)
+            insertAPIUsers()
         }
-        insertAPIUsers()
+
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         val navController = navHostFragment.navController
@@ -139,17 +140,20 @@ class MainActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        // Delay before assigning location (if necessary)
-                        delay(500)
-
                         // Assign location to the user
-                        assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
+//                        assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
                     } ?: run {
                         Toast.makeText(
                             this@MainActivity,
                             "Error inserting user. User not found.",
                             Toast.LENGTH_SHORT
                         ).show()
+                    }
+                }
+
+                for(myUser in userViewModel.getAllUsers()){
+                    if (myUser.id != user!!.id){
+                        assignLocationToUser2(myUser.firstName, myUser.lastName, user!!.id, myUser.id)
                     }
                 }
 
