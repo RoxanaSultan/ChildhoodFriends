@@ -1,3 +1,5 @@
+package com.cst.cstacademy2024
+
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,6 +21,7 @@ import com.cst.cstacademy2024.R
 import com.cst.cstacademy2024.UsersAdapter
 import com.cst.cstacademy2024.adapters.UsersApiAdapter
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.viewModels.SharedViewModel
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.launch
 //import retrofit2.Retrofit
@@ -28,14 +31,16 @@ class SearchFragment : Fragment() {
     private lateinit var spinnerCategory: Spinner
     private lateinit var searchEditText: EditText
     private lateinit var recyclerView: RecyclerView
-    private lateinit var usersAdapter: UsersApiAdapter
+    private lateinit var usersAdapter: UsersAdapter
     private lateinit var userViewModel: UserViewModel
+    private lateinit var viewModel: SharedViewModel
     private var usersList: List<User> = emptyList()
-//    private val retrofit = Retrofit.Builder()
-//        .baseUrl("https://fakestoreapi.com/")
-//        .addConverterFactory(GsonConverterFactory.create())
-//        .build()
-//    private val api = retrofit.create(FakeApiService::class.java)
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://fakestoreapi.com/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val api = retrofit.create(FakeApiService::class.java)
+    private lateinit var users: List<User>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,12 +55,13 @@ class SearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Initialize ViewModel
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         setupSpinner()
         //setupRecyclerView()
         setupSearchEditText()
 
-        // Initialize ViewModel
-        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
+
 
 //        // Observe changes in user list
 //        userViewModel.getAllUsers().observe(viewLifecycleOwner, Observer { users ->
@@ -87,19 +93,20 @@ class SearchFragment : Fragment() {
         }
     }
 
-//    private fun setupRecyclerView() {
-//        lifecycleScope.launch {
-//            try {
-//                val users = api.getUsers()
-//                usersAdapter = UsersApiAdapter(users) // Initialize with empty list
-//                recyclerView.adapter = usersAdapter
-//                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//
-//        }
-//    }
+    private fun setupRecyclerView() {
+        lifecycleScope.launch {
+            try {
+                users = userViewModel.getAllUsers()
+                usersAdapter = UsersAdapter(usersList) // Initialize with empty list
+                usersAdapter.updateList(users)
+                recyclerView.adapter = usersAdapter
+                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+        }
+    }
 
     private fun setupSearchEditText() {
         searchEditText.addTextChangedListener(object : TextWatcher {

@@ -1,9 +1,13 @@
+package com.cst.cstacademy2024
+
+import MyPlacesAdapter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.cst.cstacademy2024.R
@@ -11,6 +15,7 @@ import com.cst.cstacademy2024.models.Place
 import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
 import com.cst.cstacademy2024.viewModels.PlaceViewModel
+import com.cst.cstacademy2024.viewModels.SharedViewModel
 
 class MyPlacesFragment : Fragment() {
 
@@ -28,14 +33,25 @@ class MyPlacesFragment : Fragment() {
 
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var placeUserViewModel: PlaceUserViewModel
+    private lateinit var viewModel : SharedViewModel
     private var user: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+
+        viewModel.user.observe(viewLifecycleOwner) { userVM ->
+            // Update your UI here with user information
+            // For example: textView.text = user.name
+            user = userVM
+        }
+//        val args: MyPlacesFragmentArgs by navArgs()
+//        user = args.user
         // Retrieve the User object from the arguments
-        user = arguments?.getSerializable("USER") as? User
+        //user = arguments?.getSerializable("USER") as? User
         return inflater.inflate(R.layout.fragment_my_places, container, false)
     }
 

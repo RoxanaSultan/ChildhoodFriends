@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.cst.cstacademy2024.database.AppDatabase
 import com.cst.cstacademy2024.database.UserDao
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.models.UserAPI
 import com.cst.cstacademy2024.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +45,31 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.updateUser(id, email, firstName, lastName, phone)
         }
+    }
+
+    fun deleteUsers(users: List<UserAPI>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            for (user in users) {
+                userRepository.deleteUser(user.id)
+            }
+        }
+    }
+
+    fun addUser(userApi: UserAPI) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val user = User(userApi.id, userApi.username, userApi.password, userApi.name.firstname, userApi.name.lastname, userApi.email, userApi.phone)
+            userRepository.addUser(user)
+        }
+    }
+
+    fun getUserById(userId: Int): LiveData<User> {
+        return liveData(Dispatchers.IO) {
+            emit(userRepository.getUserById(userId))
+        }
+    }
+
+    suspend fun getAllUsers(): List<User> {
+        return userRepository.getAllUsers()
     }
 
 }

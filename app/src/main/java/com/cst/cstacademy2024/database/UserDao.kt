@@ -1,5 +1,6 @@
 package com.cst.cstacademy2024.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -19,4 +20,13 @@ interface UserDao {
 
     @Query("UPDATE users SET email = :email, first_name = :firstName, last_name = :lastName, phone = :phone WHERE id = :id")
     suspend fun updateUser(id: Int, email: String, firstName: String, lastName: String, phone: String)
+
+    @Query("DELETE FROM users WHERE id = :userId")
+    suspend fun deleteUser(userId: Int)
+
+    @Query("SELECT * FROM users WHERE id = :userId")
+    suspend fun getUserById(userId: Int): User
+
+    @Query("SELECT * FROM users")
+    suspend fun getAllUsers(): List<User>
 }
