@@ -23,8 +23,8 @@ interface PlaceUserDao {
     @Query("SELECT placeId FROM places_users WHERE userId = :userId")
     suspend fun getPlacesByUserId(userId: Int): List<Int>
 
-    @Query("SELECT placeId FROM places_users WHERE category = :category")
-    suspend fun getPlacesByCategory(category:String): List<Int>
+    @Query("SELECT placeId FROM places_users WHERE category = :category AND userId = :userId")
+    suspend fun getPlacesByCategory(category:String, userId: Int): List<Int>
 
     @Query("DELETE FROM places_users WHERE placeId = :placeId AND userId = :userId")
     suspend fun deletePlaceUser(placeId: Int, userId: Int)

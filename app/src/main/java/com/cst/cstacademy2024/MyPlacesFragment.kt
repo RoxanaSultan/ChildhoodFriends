@@ -90,18 +90,20 @@ class MyPlacesFragment : Fragment() {
     }
 
     private fun loadData(category: String) {
-        placeUserViewModel.getPlacesByCategory(category).observe(viewLifecycleOwner) { placesUser ->
-            val places = mutableListOf<Place>()
-            for (placeId in placesUser) {
-                placeViewModel.getPlaceById(placeId).observe(viewLifecycleOwner) { place ->
-                    place?.let {
-                        places.add(place)
-                        when (category) {
-                            "Addresses" -> adapterAddress.updateList(places)
-                            "Schools" -> adapterSchool.updateList(places)
-                            "High Schools" -> adapterHighSchool.updateList(places)
-                            "Colleges" -> adapterCollege.updateList(places)
-                            "Favourite Places" -> adapterFavouritePlaces.updateList(places)
+        user?.let {
+            placeUserViewModel.getPlacesByCategory(category, it.id).observe(viewLifecycleOwner) { placesUser ->
+                val places = mutableListOf<Place>()
+                for (placeId in placesUser) {
+                    placeViewModel.getPlaceById(placeId).observe(viewLifecycleOwner) { place ->
+                        place?.let {
+                            places.add(place)
+                            when (category) {
+                                "Addresses" -> adapterAddress.updateList(places)
+                                "Schools" -> adapterSchool.updateList(places)
+                                "High Schools" -> adapterHighSchool.updateList(places)
+                                "Colleges" -> adapterCollege.updateList(places)
+                                "Favourite Places" -> adapterFavouritePlaces.updateList(places)
+                            }
                         }
                     }
                 }
