@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.cst.cstacademy2024.models.User
+import com.cst.cstacademy2024.viewModels.UserViewModel
 
 private var user: User? = null
+private lateinit var userViewModel: UserViewModel
 
 class AccountFragment : Fragment(){
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -30,6 +33,7 @@ class AccountFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
 
         val myPlacesButton = view.findViewById<Button>(R.id.my_places_button)
         myPlacesButton.setOnClickListener {
@@ -42,6 +46,19 @@ class AccountFragment : Fragment(){
             transaction.replace(R.id.fragment_container, fragment)
             transaction.addToBackStack(null)  // Optional: Adds the transaction to the back stack
             transaction.commit()
+        }
+
+        val saveChangesButton = view.findViewById<Button>(R.id.save_button)
+        saveChangesButton.setOnClickListener {
+            // Salvează datele utilizatorului în baza de date
+            user?.let {
+                it.email = view.findViewById<TextView>(R.id.email).text.toString()
+                it.firstName = view.findViewById<TextView>(R.id.first_name).text.toString()
+                it.lastName = view.findViewById<TextView>(R.id.last_name).text.toString()
+                it.phone = view.findViewById<TextView>(R.id.phone_number).text.toString()
+
+                userViewModel.updateUser(it.id, it.email, it.firstName, it.lastName, it.phone)
+            }
         }
     }
 }

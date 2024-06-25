@@ -10,8 +10,8 @@ data class User(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "username") val username: String,
     @ColumnInfo(name = "password") val password: String,
-    @ColumnInfo(name = "first_name") val firstName: String,
-    @ColumnInfo(name = "last_name") val lastName: String,
-    @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "phone") val phone: String
+    @ColumnInfo(name = "first_name") var firstName: String,
+    @ColumnInfo(name = "last_name") var lastName: String,
+    @ColumnInfo(name = "email") var email: String,
+    @ColumnInfo(name = "phone") var phone: String
 ): Serializable

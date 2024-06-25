@@ -21,8 +21,8 @@ import com.cst.cstacademy2024.adapters.UsersApiAdapter
 import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+//import retrofit2.Retrofit
+//import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchFragment : Fragment() {
     private lateinit var spinnerCategory: Spinner
@@ -31,11 +31,11 @@ class SearchFragment : Fragment() {
     private lateinit var usersAdapter: UsersApiAdapter
     private lateinit var userViewModel: UserViewModel
     private var usersList: List<User> = emptyList()
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://fakestoreapi.com/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val api = retrofit.create(FakeApiService::class.java)
+//    private val retrofit = Retrofit.Builder()
+//        .baseUrl("https://fakestoreapi.com/")
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .build()
+//    private val api = retrofit.create(FakeApiService::class.java)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +51,7 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupSpinner()
-        setupRecyclerView()
+        //setupRecyclerView()
         setupSearchEditText()
 
         // Initialize ViewModel
@@ -87,19 +87,19 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun setupRecyclerView() {
-        lifecycleScope.launch {
-            try {
-                val users = api.getUsers()
-                usersAdapter = UsersApiAdapter(users) // Initialize with empty list
-                recyclerView.adapter = usersAdapter
-                recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-        }
-    }
+//    private fun setupRecyclerView() {
+//        lifecycleScope.launch {
+//            try {
+//                val users = api.getUsers()
+//                usersAdapter = UsersApiAdapter(users) // Initialize with empty list
+//                recyclerView.adapter = usersAdapter
+//                recyclerView.layoutManager = LinearLayoutManager(requireContext())
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//
+//        }
+//    }
 
     private fun setupSearchEditText() {
         searchEditText.addTextChangedListener(object : TextWatcher {

@@ -40,4 +40,10 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateUser(id: Int, email: String, firstName: String, lastName: String, phone: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.updateUser(id, email, firstName, lastName, phone)
+        }
+    }
+
 }
