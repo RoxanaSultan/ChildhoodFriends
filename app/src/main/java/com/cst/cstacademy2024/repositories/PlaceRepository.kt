@@ -21,8 +21,8 @@ class PlaceRepository(private val placeDao: PlaceDao) {
             return placeDao.getAllPlaces()
         }
 
-        suspend fun getPlaceById(id: Int): Place {
-            return placeDao.getPlaceById(id)
+        suspend fun getPlaceById(id: Int, userId: Int): Place {
+            return placeDao.getPlaceById(id, userId)
         }
 
     suspend fun deletePlace(id: Int) {

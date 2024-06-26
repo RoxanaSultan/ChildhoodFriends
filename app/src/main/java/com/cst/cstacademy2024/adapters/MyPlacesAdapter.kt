@@ -43,6 +43,13 @@ class MyPlacesAdapter(
                     onDeleteClickListener?.invoke(items[position])
                 }
             }
+
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onDeleteClickListener?.invoke(items[position])
+                }
+            }
         }
 
         fun bind(place: Place) {

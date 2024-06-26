@@ -16,6 +16,7 @@ import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
 import com.cst.cstacademy2024.viewModels.PlaceViewModel
 import com.cst.cstacademy2024.viewModels.SharedViewModel
+import kotlinx.coroutines.delay
 
 class MyPlacesFragment : Fragment() {
 
@@ -79,11 +80,11 @@ class MyPlacesFragment : Fragment() {
         recyclerViewFavouritePlaces.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize adapters with lambdas
-        adapterAddress = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
-        adapterSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
-        adapterHighSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
-        adapterCollege = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
-        adapterFavouritePlaces = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place) })
+        adapterAddress = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Addresses")})
+        adapterSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Schools")})
+        adapterHighSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "High Schools")})
+        adapterCollege = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Colleges")})
+        adapterFavouritePlaces = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Favourite Places")})
 
         // Set adapters to RecyclerViews
         recyclerViewAddress.adapter = adapterAddress
@@ -93,10 +94,12 @@ class MyPlacesFragment : Fragment() {
         recyclerViewFavouritePlaces.adapter = adapterFavouritePlaces
     }
 
-    private fun onDeleteClick(place: Place) {
+    private fun onDeleteClick(place: Place, category: String) {
         user?.let {
-            placeUserViewModel.deletePlaceUser(place.id, it.id)
-            placeViewModel.deletePlace(place.id)
+            val placeId = place.id
+            placeUserViewModel.deletePlaceUser(placeId, it.id)
+            placeViewModel.deletePlace(placeId)
+            loadData(category)
         }
     }
 
@@ -105,16 +108,16 @@ class MyPlacesFragment : Fragment() {
             placeUserViewModel.getPlacesByCategory(category, it.id).observe(viewLifecycleOwner) { placesUser ->
                 val places = mutableListOf<Place>()
                 for (placeId in placesUser) {
-                    placeViewModel.getPlaceById(placeId).observe(viewLifecycleOwner) { place ->
+                    placeViewModel.getPlaceById(placeId, it.id).observe(viewLifecycleOwner) { place ->
                         place?.let {
                             places.add(place)
-                            when (category) {
-                                "Addresses" -> adapterAddress.updateList(places)
-                                "Schools" -> adapterSchool.updateList(places)
-                                "High Schools" -> adapterHighSchool.updateList(places)
-                                "Colleges" -> adapterCollege.updateList(places)
-                                "Favourite Places" -> adapterFavouritePlaces.updateList(places)
-                            }
+                        }
+                        when (category) {
+                            "Addresses" -> adapterAddress.updateList(places)
+                            "Schools" -> adapterSchool.updateList(places)
+                            "High Schools" -> adapterHighSchool.updateList(places)
+                            "Colleges" -> adapterCollege.updateList(places)
+                            "Favourite Places" -> adapterFavouritePlaces.updateList(places)
                         }
                     }
                 }

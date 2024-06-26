@@ -39,9 +39,9 @@ class PlaceViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getPlaceById(id: Int): LiveData<Place> {
+    fun getPlaceById(id: Int, userId: Int): LiveData<Place> {
         return liveData(Dispatchers.IO) {
-            emit(placeRepository.getPlaceById(id))
+            emit(placeRepository.getPlaceById(id, userId))
         }
     }
 
