@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.cst.cstacademy2024.models.PlaceUser
@@ -151,14 +152,23 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                                     userId = user!!.id,
                                     category = selectedCategory
                                 )
+                                placeUserViewModel.getPlaceUser(placeId, user!!.id).observe(viewLifecycleOwner, Observer { placeFound ->
+                                    if (placeFound != null) {
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Location already exists.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        placeUserViewModel.insertPlaceUser(placeUser)
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Location added successfully.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                })
 
-                                // Insert the PlaceUser object into the database
-                                placeUserViewModel.insertPlaceUser(placeUser)
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Location added successfully!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             } else {
                                 Toast.makeText(
                                     requireContext(),

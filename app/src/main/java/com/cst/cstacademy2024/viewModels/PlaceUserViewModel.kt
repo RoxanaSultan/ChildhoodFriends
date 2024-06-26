@@ -45,6 +45,12 @@ class PlaceUserViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
+
+    fun getPlaceUser(userId: Int, placeId: Int): LiveData<PlaceUser?> {
+        return liveData(Dispatchers.IO) {
+            emit(placeUserRepository.getPlaceUser(userId, placeId))
+        }
+    }
     fun getPlacesByCategory(category: String, userId: Int): LiveData<List<Int>> {
         return liveData(Dispatchers.IO) {
             emit(placeUserRepository.getPlacesByCategory(category, userId))
