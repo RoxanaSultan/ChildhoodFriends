@@ -2,6 +2,7 @@ package com.cst.cstacademy2024
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -48,8 +49,18 @@ class MainActivity : AppCompatActivity() {
     private lateinit var usersApiList : List<UserAPI>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        setTheme(R.style.Theme_Childhood)
+
         super.onCreate(savedInstanceState)
+
+        when (ThemeUtils.loadThemeMode(this)) {
+            ThemeUtils.LIGHT_MODE -> setTheme(R.style.Theme_Childhood)
+            ThemeUtils.DARK_MODE -> setTheme(R.style.Theme_CSTAcademy2024_Dark)
+        }
+
         setContentView(R.layout.activity_main)
+        setupThemeToggle()
 
         // Receive user object passed from previous activity
         user = intent.getSerializableExtra("USER") as? User
@@ -117,6 +128,19 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         "onDestroy".logErrorMessage()
+    }
+
+    private fun setupThemeToggle() {
+        val toggleButton: Button = findViewById(R.id.toggle_button)
+        toggleButton.setOnClickListener {
+            val newTheme = if (ThemeUtils.loadThemeMode(this) == ThemeUtils.LIGHT_MODE) {
+                ThemeUtils.DARK_MODE
+            } else {
+                ThemeUtils.LIGHT_MODE
+            }
+            ThemeUtils.saveThemeMode(this, newTheme)
+            recreate()  // Recreate the activity to apply the new theme
+        }
     }
 
     private fun insertAPIUsers() {

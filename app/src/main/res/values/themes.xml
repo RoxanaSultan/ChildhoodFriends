@@ -1,14 +1,14 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<resources>
+    <!-- Base theme which applies to both light and dark themes -->
     <style name="Base.Theme.CSTAcademy2024" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- Configure items that are common across both themes -->
     </style>
 
+    <!-- Light Theme -->
     <style name="Theme.Childhood" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/koromiko</item>
-        <item name="colorPrimaryVariant">@color/sunshade</item>
+        <item name="colorPrimaryVariant">@color/mac_and_cheese</item>
         <item name="colorOnPrimary">@color/sunshade</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/tequila</item>
@@ -16,8 +16,26 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="colorButtonNormal">@color/koromiko</item>
+        <item name="colorAccent">@color/aegean_blue</item>
+
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.CSTAcademy2024" parent="Base.Theme.CSTAcademy2024" />
+    <!-- Dark Theme -->
+    <style name="Theme.CSTAcademy2024.Dark" parent="Base.Theme.CSTAcademy2024">
+        <item name="colorPrimary">@color/dark_primary</item>
+        <item name="colorPrimaryVariant">@color/dark_primaryVariant</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/dark_secondary</item>
+        <item name="colorSecondaryVariant">@color/dark_secondaryVariant</item>
+        <item name="colorOnSecondary">@color/white</item>
+
+        <item name="android:statusBarColor">@color/dark_primaryVariant</item>
+        <item name="colorButtonNormal">@color/koromiko</item>
+        <item name="colorAccent">@color/aegean_blue</item>
+        <item name="android:colorBackground">@color/iron</item>
+        <!-- Add more customizations for dark theme here -->
+    </style>
 </resources>

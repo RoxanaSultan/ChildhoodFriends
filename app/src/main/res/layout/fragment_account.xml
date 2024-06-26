@@ -5,19 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@color/ecru"
     tools:context=".AccountFragment">
 
-    <!-- Profile Picture -->
-    <ImageView
-        android:id="@+id/profile_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginBottom="16dp"
-        android:contentDescription="@string/profile_picture"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- First Name Label -->
     <TextView
@@ -25,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/first_name"
-        app:layout_constraintTop_toBottomOf="@id/profile_image"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="80dp" />
@@ -111,6 +100,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="8dp" />
 
+    <TextView
+        android:id="@+id/text_toggle_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/dark_mode"
+        app:layout_constraintTop_toBottomOf="@id/phone_number"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="60dp"
+        android:textSize="17dp"
+        android:textColor="@color/aegean_blue"
+
+        />
+
+    <ToggleButton
+        android:id="@+id/toggle_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/text_toggle_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:background="@color/aegean_blue"
+        android:textColor="@color/white"
+        />
+
     <!-- Save Changes Button -->
     <android.widget.Button
         android:id="@+id/save_button"
@@ -119,10 +134,10 @@
         android:text="@string/save_changes"
         android:background="@color/mac_and_cheese"
         android:textColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@id/phone_number"
+        app:layout_constraintTop_toBottomOf="@id/toggle_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="80dp" />
     <!-- Save Changes Button -->
     <android.widget.Button
         android:id="@+id/my_places_button"

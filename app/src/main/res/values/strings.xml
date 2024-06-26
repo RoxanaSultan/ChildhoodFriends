@@ -17,4 +17,5 @@
     <string name="age">Age</string>
     <string name="save_changes">Save Changes</string>
     <string name="phone_number">Phone Number</string>
+    <string name="dark_mode">Nighttime Viewing Experience</string>
 </resources>

@@ -18,6 +18,15 @@
     <color name="feijoa">#ACD793</color>
     <color name="ecru">#FEFFD2</color>
     <color name="mac_and_cheese">#FFBF78</color>
+    <color name="pale_leaf">#cedcc5</color>
+    <color name="regent_st_blue">#a6d0e7</color>
+    <color name="aegean_blue">#1f456e</color>
+    <color name="iron">#CFD3D8</color>
+
+    <color name="dark_primary">#121212</color>  <!-- Dark Primary Color -->
+    <color name="dark_primaryVariant">#333333</color>  <!-- Dark Primary Variant -->
+    <color name="dark_secondary">#505050</color>  <!-- Dark Secondary Color -->
+    <color name="dark_secondaryVariant">#787878</color>
 
 
 </resources>
