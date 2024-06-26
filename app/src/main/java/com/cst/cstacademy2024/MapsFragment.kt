@@ -133,9 +133,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                 //Insert the Place object into the database and get the generated ID
                 lifecycleScope.launch {
-                    if(placeViewModel.getPlace(placeName, location).value == 0) {
-                        placeViewModel.insertPlace(place)
-                    }
+                    placeViewModel.getPlace(placeName, location).observe(viewLifecycleOwner, Observer { placeFound ->
+                        if (placeFound == null) {
+                            placeViewModel.insertPlace(place)
+                        }
+                    })
+
+
 
                     delay(500)
                     

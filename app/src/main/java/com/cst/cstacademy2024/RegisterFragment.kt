@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.cst.cstacademy2024.models.PlaceUser
 import com.cst.cstacademy2024.models.User
@@ -64,10 +65,11 @@ class RegisterFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            if(userViewModel.getUserByUsername(username) != null) {
-                Toast.makeText(activity, "Username already exists", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            userViewModel.getUserByUsername(username).observe(viewLifecycleOwner, Observer { user ->
+                if (user != null) {
+                    Toast.makeText(activity, "Username already exists", Toast.LENGTH_SHORT).show()
+                }
+            })
 
 
             val user = User(username = username, password = password, firstName = firstName, lastName = lastName, email = email, phone = phone)
