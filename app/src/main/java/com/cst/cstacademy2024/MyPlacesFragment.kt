@@ -98,7 +98,6 @@ class MyPlacesFragment : Fragment() {
         user?.let {
             val placeId = place.id
             placeUserViewModel.deletePlaceUser(placeId, it.id)
-            placeViewModel.deletePlace(placeId)
             loadData(category)
         }
     }
