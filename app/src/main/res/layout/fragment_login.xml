@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        android:textColor="@color/sunshade"/>
+        android:textColor="@drawable/text_color_login_register"/>
 
     <android.widget.Button
         android:id="@+id/btn_register"
@@ -50,6 +50,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="16dp"
         android:text="@string/register"
-        android:textColor="@color/sunshade"/>
+        android:textColor="@drawable/text_color_login_register"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
