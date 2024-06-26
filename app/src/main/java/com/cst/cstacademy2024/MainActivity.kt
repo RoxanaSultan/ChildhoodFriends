@@ -159,11 +159,11 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 }
-                Toast.makeText(
-                    this@MainActivity,
-                    "Users deleted successfully!",
-                    Toast.LENGTH_SHORT
-                ).show()
+//                Toast.makeText(
+//                    this@MainActivity,
+//                    "Users deleted successfully!",
+//                    Toast.LENGTH_SHORT
+//                ).show()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -183,22 +183,22 @@ class MainActivity : AppCompatActivity() {
                         userViewModel.getUserSync(userAPI.username, userAPI.password)
                     }
 
-                    insertedUser?.let {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "User ${it.username} inserted successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        // Assign location to the user
-//                        assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
-                    } ?: run {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Error inserting user. User not found.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+//                    insertedUser?.let {
+//                        Toast.makeText(
+//                            this@MainActivity,
+//                            "User ${it.username} inserted successfully!",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//
+//                        // Assign location to the user
+////                        assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
+//                    } ?: run {
+//                        Toast.makeText(
+//                            this@MainActivity,
+//                            "Error inserting user. User not found.",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
                 }
 
                 for(myUser in userViewModel.getAllUsers()){
