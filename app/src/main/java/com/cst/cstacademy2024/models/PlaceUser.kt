@@ -8,10 +8,19 @@ import androidx.room.Index
     tableName = "places_users",
     primaryKeys = ["placeId", "userId"],
     foreignKeys = [
-        ForeignKey(entity = Place::class, parentColumns = ["id"], childColumns = ["placeId"]),
-        ForeignKey(entity = User::class, parentColumns = ["id"], childColumns = ["userId"])
-    ],
-    indices = [Index(value = ["placeId"]), Index(value = ["userId"])]
+        ForeignKey(
+            entity = Place::class,
+            parentColumns = ["id"],
+            childColumns = ["placeId"],
+            onDelete = ForeignKey.NO_ACTION
+        ),
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["id"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
 )
 data class PlaceUser(
     val placeId: Int,

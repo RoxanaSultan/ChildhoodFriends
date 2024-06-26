@@ -12,6 +12,7 @@ import com.cst.cstacademy2024.models.PlaceUser
 import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.models.UserAPI
 import com.cst.cstacademy2024.repositories.PlaceUserRepository
+import com.cst.cstacademy2024.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -20,9 +21,13 @@ class PlaceUserViewModel(application: Application) : AndroidViewModel(applicatio
     //private val placeUserDao: PlaceUserDao = AppDatabase.getDatabase(application).placeUserDao()
 
     private val placeUserRepository: PlaceUserRepository
+    private val userRepository: UserRepository
+
     init {
         val placeUserDao = AppDatabase.getDatabase(application).placeUserDao()
         placeUserRepository = PlaceUserRepository(placeUserDao)
+        val userDao = AppDatabase.getDatabase(application).userDao()
+        userRepository = UserRepository(userDao)
     }
     fun insertPlaceUser(placeUser: PlaceUser) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -48,13 +53,12 @@ class PlaceUserViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun deletePlacesAndUsers(users: List<UserAPI>) {
+    fun deletePlacesAndUsers(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
-            for (user in users) {
-                placeUserRepository.deletePlacesAndUsers(user.id)
-            }
+            placeUserRepository.deletePlacesAndUsers(userId)
         }
     }
+
 
     fun getCategoryByUserAndPlace(userId: Int, placeId: Int): LiveData<String> {
         return liveData(Dispatchers.IO) {

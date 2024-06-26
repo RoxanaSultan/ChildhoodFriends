@@ -3,6 +3,7 @@ package com.cst.cstacademy2024.viewModels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,8 @@ import kotlinx.coroutines.launch
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     private val userRepository: UserRepository
+    private val _userCount = MutableLiveData<Int>()
+    val userCount: LiveData<Int> get() = _userCount
 
     init {
         val userDao = AppDatabase.getDatabase(application).userDao()
@@ -50,15 +53,15 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteUsers(users: List<UserAPI>) {
         viewModelScope.launch(Dispatchers.IO) {
             for (user in users) {
-                userRepository.deleteUser(user.id)
+                userRepository.deleteUser(userRepository.getUser(user.username, user.password)!!.id)
             }
         }
     }
 
     fun addUser(userApi: UserAPI) {
         viewModelScope.launch(Dispatchers.IO) {
-            val user = User(userApi.id, userApi.username, userApi.password, userApi.name.firstname, userApi.name.lastname, userApi.email, userApi.phone)
-            userRepository.addUser(user)
+            val user = User(username = userApi.username, password = userApi.password, firstName = userApi.name.firstname, lastName = userApi.name.lastname, email = userApi.email, phone = userApi.phone)
+            userRepository.insertUser(user)
         }
     }
 
@@ -70,6 +73,27 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun getAllUsers(): List<User> {
         return userRepository.getAllUsers()
+    }
+
+    suspend fun getUserSync(username: String, password: String): User? {
+        var user: User? = null
+        viewModelScope.launch(Dispatchers.IO) {
+            user = userRepository.getUser(username, password)
+        }.join()  // Wait for the coroutine to finish
+        return user
+    }
+
+    fun getUserCount() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val count = userRepository.getAllUsers().size
+            _userCount.postValue(count) // Update the MutableLiveData
+        }
+    }
+
+    fun deleteAllUsers(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.deleteAllUsers(userId)
+        }
     }
 
 }

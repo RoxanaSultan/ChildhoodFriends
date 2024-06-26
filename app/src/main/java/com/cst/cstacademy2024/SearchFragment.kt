@@ -26,6 +26,7 @@ import com.cst.cstacademy2024.viewModels.UserViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.Locale
 
 class SearchFragment : Fragment() {
     private lateinit var spinnerCategory: Spinner
@@ -123,7 +124,8 @@ class SearchFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val category = spinnerCategory.selectedItem.toString()
-                search(category, s.toString())
+                val placeQuery = "%${s.toString().toLowerCase(Locale.getDefault())}%"
+                search(category, placeQuery)
             }
         })
     }
@@ -132,11 +134,15 @@ class SearchFragment : Fragment() {
         // Call the viewModel to get the filtered users based on category and place
         user?.let {
             userViewModel.getUsersByCategoryPlace(category, placeName, it.id).observe(viewLifecycleOwner) { filteredUsers ->
-                // Update the RecyclerView with the filtered users
-                usersAdapter.updateList(filteredUsers)
+                // Create a HashSet with a custom equality check
+                val uniqueUsers = filteredUsers.distinctBy { it.firstName to it.lastName }
+                // Update the RecyclerView with the deduplicated users
+                usersAdapter.updateList(uniqueUsers)
             }
         }
     }
+
+
 
 
 }
