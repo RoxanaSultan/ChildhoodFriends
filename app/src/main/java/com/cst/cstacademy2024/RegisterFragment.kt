@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.cst.cstacademy2024.models.PlaceUser
@@ -47,6 +48,27 @@ class RegisterFragment : Fragment() {
             val lastName = lastNameField.text.toString()
             val email = emailField.text.toString()
             val phone = phoneField.text.toString()
+
+            if(username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                Toast.makeText(activity, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(activity, "Invalid email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(phone.length != 10 || !phone.matches(Regex("[0-9]+"))) {
+                Toast.makeText(activity, "Invalid phone number", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if(userViewModel.getUserByUsername(username) != null) {
+                Toast.makeText(activity, "Username already exists", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
 
             val user = User(username = username, password = password, firstName = firstName, lastName = lastName, email = email, phone = phone)
 

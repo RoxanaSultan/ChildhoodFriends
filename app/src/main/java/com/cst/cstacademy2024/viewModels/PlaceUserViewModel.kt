@@ -3,6 +3,7 @@ package com.cst.cstacademy2024.viewModels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
@@ -22,6 +23,9 @@ class PlaceUserViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val placeUserRepository: PlaceUserRepository
     private val userRepository: UserRepository
+    private val _userToDelete = MutableLiveData<User?>()
+    val userToDelete: LiveData<User?> = _userToDelete
+
 
     init {
         val placeUserDao = AppDatabase.getDatabase(application).placeUserDao()

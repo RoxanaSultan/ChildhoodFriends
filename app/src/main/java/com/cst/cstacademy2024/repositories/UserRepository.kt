@@ -14,6 +14,9 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getUser(username, password)
     }
 
+    suspend fun getUserByUsername(username: String): User? {
+        return userDao.getUserByUsername(username)
+    }
     suspend fun checkUserExists(username: String, password: String): Boolean {
         val user = userDao.getUser(username, password)
         return user != null

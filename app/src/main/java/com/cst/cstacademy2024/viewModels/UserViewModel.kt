@@ -38,6 +38,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun getUserByUsername(username: String): LiveData<User?> {
+        return liveData(Dispatchers.IO) {
+            emit(userRepository.getUserByUsername(username))
+        }
+    }
+
     fun getUsersByCategoryPlace(category: String, place: String, userId: Int): LiveData<List<User>> {
         return liveData(Dispatchers.IO) {
             emit(userRepository.getUsersByCategoryPlace(category, place, userId))
@@ -55,6 +61,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
             for (user in users) {
                 userRepository.deleteUser(userRepository.getUser(user.username, user.password)!!.id)
             }
+        }
+    }
+
+    fun deleteUser(userId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.deleteUser(userId)
         }
     }
 

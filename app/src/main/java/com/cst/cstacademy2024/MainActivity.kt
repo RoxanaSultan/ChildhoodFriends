@@ -76,8 +76,9 @@ class MainActivity : AppCompatActivity() {
 
 
         user?.let {
-            placeUserViewModel.deletePlacesAndUsers(it.id)
-            userViewModel.deleteAllUsers(it.id)
+//            placeUserViewModel.deletePlacesAndUsers(it.id)
+//            userViewModel.deleteAllUsers(it.id)
+            deleteUsersApi()
             insertAPIUsers()
         }
 
@@ -143,6 +144,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun deleteUsersApi() {
+        lifecycleScope.launch {
+            try {
+                usersApiList = api.getUsers()
+                for(userAPI in usersApiList)
+                {
+                    userViewModel.getUser(userAPI.username, userAPI.password).observe(this@MainActivity, Observer { user ->
+                        user?.let {
+                            placeUserViewModel.deletePlacesAndUsers(it.id)
+                            userViewModel.deleteUser(it.id)
+                        } ?: run {
+                            Log.d("MainActivity", "User not found or deleted")
+                        }
+                    })
+                }
+                Toast.makeText(
+                    this@MainActivity,
+                    "Users deleted successfully!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
     private fun insertAPIUsers() {
         lifecycleScope.launch {
             try {

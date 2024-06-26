@@ -26,6 +26,7 @@
         app:layout_constraintTop_toBottomOf="@id/et_user_name_login"
         app:layout_constraintBottom_toTopOf="@id/btn_login"
         app:layout_constraintWidth_percent="0.8"
+        android:inputType="textPassword"
         android:hint="@string/password"/>
 
     <android.widget.Button
