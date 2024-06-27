@@ -11,8 +11,8 @@ data class UserAPI(
 )
 
 data class Name(
-    val firstname: String,
-    val lastname: String
+    var firstname: String,
+    var lastname: String
 )
 
 data class Address(

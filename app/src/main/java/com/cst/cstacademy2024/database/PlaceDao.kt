@@ -14,9 +14,6 @@ interface PlaceDao {
     @Query("SELECT * FROM places")
     suspend fun getAllPlaces(): List<Place>
 
-//    @Query("SELECT * FROM places WHERE id = :id")
-//    suspend fun getPlace(id: Int): Place?
-
     @Query("SELECT id FROM places WHERE name = :name AND location = :location")
     suspend fun getPlaceId(name: String, location: String): Int
 

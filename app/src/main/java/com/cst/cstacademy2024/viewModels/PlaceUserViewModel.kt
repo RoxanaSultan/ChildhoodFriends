@@ -19,8 +19,6 @@ import kotlinx.coroutines.launch
 
 class PlaceUserViewModel(application: Application) : AndroidViewModel(application) {
 
-    //private val placeUserDao: PlaceUserDao = AppDatabase.getDatabase(application).placeUserDao()
-
     private val placeUserRepository: PlaceUserRepository
     private val userRepository: UserRepository
     private val _userToDelete = MutableLiveData<User?>()

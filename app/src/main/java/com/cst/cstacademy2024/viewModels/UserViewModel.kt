@@ -14,6 +14,7 @@ import com.cst.cstacademy2024.models.UserAPI
 import com.cst.cstacademy2024.repositories.UserRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class UserViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -44,7 +45,11 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getUsersByCategoryPlace(category: String, place: String, userId: Int): LiveData<List<User>> {
+    fun getUsersByCategoryPlace(
+        category: String,
+        place: String,
+        userId: Int
+    ): LiveData<List<User>> {
         return liveData(Dispatchers.IO) {
             emit(userRepository.getUsersByCategoryPlace(category, place, userId))
         }
@@ -72,7 +77,14 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addUser(userApi: UserAPI) {
         viewModelScope.launch(Dispatchers.IO) {
-            val user = User(username = userApi.username, password = userApi.password, firstName = userApi.name.firstname, lastName = userApi.name.lastname, email = userApi.email, phone = userApi.phone)
+            val user = User(
+                username = userApi.username,
+                password = userApi.password,
+                firstName = userApi.name.firstname,
+                lastName = userApi.name.lastname,
+                email = userApi.email,
+                phone = userApi.phone
+            )
             userRepository.insertUser(user)
         }
     }
@@ -105,6 +117,12 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteAllUsers(userId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             userRepository.deleteAllUsers(userId)
+        }
+    }
+
+    suspend fun checkUserExists(username: String): Boolean {
+        return withContext(Dispatchers.IO) {
+            userRepository.userExists(username)
         }
     }
 

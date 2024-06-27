@@ -34,7 +34,7 @@ class MyPlacesFragment : Fragment() {
 
     private lateinit var placeViewModel: PlaceViewModel
     private lateinit var placeUserViewModel: PlaceUserViewModel
-    private lateinit var viewModel : SharedViewModel
+    private lateinit var viewModel: SharedViewModel
     private var user: User? = null
 
     override fun onCreateView(
@@ -45,8 +45,6 @@ class MyPlacesFragment : Fragment() {
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         viewModel.user.observe(viewLifecycleOwner) { userVM ->
-            // Update your UI here with user information
-            // For example: textView.text = user.name
             user = userVM
             // Load data for each category
             loadData("Addresses")
@@ -80,11 +78,11 @@ class MyPlacesFragment : Fragment() {
         recyclerViewFavouritePlaces.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize adapters with lambdas
-        adapterAddress = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Addresses")})
-        adapterSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Schools")})
-        adapterHighSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "High Schools")})
-        adapterCollege = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Colleges")})
-        adapterFavouritePlaces = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Favourite Places")})
+        adapterAddress = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Addresses") })
+        adapterSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Schools") })
+        adapterHighSchool = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "High Schools") })
+        adapterCollege = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Colleges") })
+        adapterFavouritePlaces = MyPlacesAdapter(listOf(), { place -> onDeleteClick(place, "Favourite Places") })
 
         // Set adapters to RecyclerViews
         recyclerViewAddress.adapter = adapterAddress
@@ -104,23 +102,25 @@ class MyPlacesFragment : Fragment() {
 
     private fun loadData(category: String) {
         user?.let {
-            placeUserViewModel.getPlacesByCategory(category, it.id).observe(viewLifecycleOwner) { placesUser ->
-                val places = mutableListOf<Place>()
-                for (placeId in placesUser) {
-                    placeViewModel.getPlaceById(placeId, it.id).observe(viewLifecycleOwner) { place ->
-                        place?.let {
-                            places.add(place)
-                        }
-                        when (category) {
-                            "Addresses" -> adapterAddress.updateList(places)
-                            "Schools" -> adapterSchool.updateList(places)
-                            "High Schools" -> adapterHighSchool.updateList(places)
-                            "Colleges" -> adapterCollege.updateList(places)
-                            "Favourite Places" -> adapterFavouritePlaces.updateList(places)
-                        }
+            placeUserViewModel.getPlacesByCategory(category, it.id)
+                .observe(viewLifecycleOwner) { placesUser ->
+                    val places = mutableListOf<Place>()
+                    for (placeId in placesUser) {
+                        placeViewModel.getPlaceById(placeId, it.id)
+                            .observe(viewLifecycleOwner) { place ->
+                                place?.let {
+                                    places.add(place)
+                                }
+                                when (category) {
+                                    "Addresses" -> adapterAddress.updateList(places)
+                                    "Schools" -> adapterSchool.updateList(places)
+                                    "High Schools" -> adapterHighSchool.updateList(places)
+                                    "Colleges" -> adapterCollege.updateList(places)
+                                    "Favourite Places" -> adapterFavouritePlaces.updateList(places)
+                                }
+                            }
                     }
                 }
-            }
         }
     }
 }
