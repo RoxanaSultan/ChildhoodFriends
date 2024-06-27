@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:background="@color/ecru">
+        android:background="@drawable/gradient_background">
 
         <TextView
             android:id="@+id/tv_place_name"

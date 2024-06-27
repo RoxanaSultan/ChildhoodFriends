@@ -26,9 +26,10 @@
         app:layout_constraintTop_toBottomOf="@id/et_user_name_login"
         app:layout_constraintBottom_toTopOf="@id/btn_login"
         app:layout_constraintWidth_percent="0.8"
+        android:inputType="textPassword"
         android:hint="@string/password"/>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/btn_login"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,9 +38,10 @@
         app:layout_constraintBottom_toTopOf="@id/btn_register"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@drawable/text_color_login_register"/>
 
-    <Button
+    <android.widget.Button
         android:id="@+id/btn_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -47,6 +49,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="16dp"
-        android:text="@string/register"/>
+        android:text="@string/register"
+        android:textColor="@drawable/text_color_login_register"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

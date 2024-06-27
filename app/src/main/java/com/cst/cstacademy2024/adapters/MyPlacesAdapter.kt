@@ -19,6 +19,7 @@ class MyPlacesAdapter(
     fun updateList(newList: List<Place>) {
         items = newList
         notifyDataSetChanged()
+        notifyItemRemoved(items.size - 1)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
@@ -38,6 +39,13 @@ class MyPlacesAdapter(
 
         init {
             deleteButton.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    onDeleteClickListener?.invoke(items[position])
+                }
+            }
+
+            itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     onDeleteClickListener?.invoke(items[position])

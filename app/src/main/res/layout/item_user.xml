@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
-        android:background="@color/ecru">
+        android:background="@drawable/gradient_background">
 
         <!-- First Name and Last Name -->
         <LinearLayout

@@ -16,17 +16,20 @@ import com.cst.cstacademy2024.viewModels.UserViewModel
 private var user: User? = null
 private lateinit var userViewModel: UserViewModel
 
-class AccountFragment : Fragment(){
+class AccountFragment : Fragment() {
 
     private lateinit var viewModel: SharedViewModel
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
         val view = inflater.inflate(R.layout.fragment_account, container, false)
 
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         viewModel.user.observe(viewLifecycleOwner) { userVM ->
             user = userVM
-            // Update your UI here with user information
             view.findViewById<TextView>(R.id.email).text = userVM.email
             view.findViewById<TextView>(R.id.first_name).text = userVM.firstName
             view.findViewById<TextView>(R.id.last_name).text = userVM.lastName
@@ -46,7 +49,6 @@ class AccountFragment : Fragment(){
 
         val saveChangesButton = view.findViewById<Button>(R.id.save_button)
         saveChangesButton.setOnClickListener {
-            // Salvează datele utilizatorului în baza de date
             user?.let {
                 it.email = view.findViewById<TextView>(R.id.email).text.toString()
                 it.firstName = view.findViewById<TextView>(R.id.first_name).text.toString()

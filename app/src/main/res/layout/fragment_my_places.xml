@@ -16,6 +16,22 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Favorite Places RecyclerView with Title -->
+            <TextView
+                android:id="@+id/text_favourite_places"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Favorite Places"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:padding="16dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_favourite_places"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
             <!-- Address RecyclerView with Title -->
             <TextView
                 android:id="@+id/text_address"
@@ -76,22 +92,6 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_college"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
-
-            <!-- Favorite Places RecyclerView with Title -->
-            <TextView
-                android:id="@+id/text_favourite_places"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Favorite Places"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:padding="16dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_favourite_places"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false" />

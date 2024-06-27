@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.cst.cstacademy2024.models.PlaceUser
@@ -73,13 +74,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
 
         viewModel.user.observe(viewLifecycleOwner) { userVM ->
-            // Update your UI here with user information
-            // For example: textView.text = user.name
             user = userVM
         }
-
-//        val args = MapsFragmentArgs.fromBundle(requireArguments())
-//        user = args.user
 
 
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
@@ -101,7 +97,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val supportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        val supportMapFragment =
+            childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         supportMapFragment?.getMapAsync(this)
         setupSearchView()
         view.findViewById<Button>(R.id.btnAddLocation).setOnClickListener {
@@ -110,13 +107,15 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun showCategorySelectionDialog() {
-        val categories = arrayOf("Addresses", "Schools", "High Schools", "Colleges", "Favourite Places")
+        val categories =
+            arrayOf("Addresses", "Schools", "High Schools", "Colleges", "Favourite Places")
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Select Category")
         builder.setItems(categories) { dialog, which ->
             val selectedCategory = categories[which]
-            val marker = if (otherLocationMarker != null) otherLocationMarker else currentLocationMarker
+            val marker =
+                if (otherLocationMarker != null) otherLocationMarker else currentLocationMarker
 
             if (marker != null) {
                 // Get the location details
@@ -132,37 +131,47 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                 //Insert the Place object into the database and get the generated ID
                 lifecycleScope.launch {
-                    placeViewModel.insertPlace(place)
+                    placeViewModel.getPlace(placeName, location)
+                        .observe(viewLifecycleOwner, Observer { placeFound ->
+                            if (placeFound == null) {
+                                placeViewModel.insertPlace(place)
+                            }
+                        })
+
+
 
                     delay(500)
-                    
+
                     val placeIdLiveData = placeViewModel.getPlace(placeName, location)
                     placeIdLiveData.observe(viewLifecycleOwner) { placeId ->
                         placeIdLiveData.removeObservers(viewLifecycleOwner) // Remove observer after getting value
 
                         if (placeId != null && placeId > 0) {
                             // Create a PlaceUser object with the correct placeId
-                            //val user = arguments?.getSerializable("USER") as? User
                             if (user != null) {
                                 val placeUser = PlaceUser(
                                     placeId = placeId,
                                     userId = user!!.id,
                                     category = selectedCategory
                                 )
+                                placeUserViewModel.getPlaceUser(placeId, user!!.id)
+                                    .observe(viewLifecycleOwner, Observer { placeFound ->
+                                        if (placeFound != null) {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Location already exists.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            placeUserViewModel.insertPlaceUser(placeUser)
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Location added successfully.",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    })
 
-                                // Insert the PlaceUser object into the database
-                                placeUserViewModel.insertPlaceUser(placeUser)
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Location added successfully!",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "User information is missing.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
                             }
                         } else {
                             Toast.makeText(
@@ -182,14 +191,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-
-
     private fun setupSearchView() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 val loc = searchView.query.toString()
                 if (loc.isEmpty()) {
-                    Toast.makeText(requireActivity(), "Location Not Found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireActivity(), "Location Not Found", Toast.LENGTH_SHORT)
+                        .show()
                 } else {
                     // Use Places API to search for places
                     val fields = listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG)
@@ -202,7 +210,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                             val prediction = response.autocompletePredictions.firstOrNull()
                             prediction?.let {
                                 val placeId = it.placeId
-                                val placeFieldsRequest = FetchPlaceRequest.builder(placeId, fields).build()
+                                val placeFieldsRequest =
+                                    FetchPlaceRequest.builder(placeId, fields).build()
 
                                 placesClient.fetchPlace(placeFieldsRequest)
                                     .addOnSuccessListener { fetchPlaceResponse ->
@@ -213,27 +222,50 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
                                         if (latLng != null) {
                                             otherLocationMarker?.remove()
-                                            val markerOptions = MarkerOptions().position(latLng).title(placeName).snippet(placeName)
-                                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                                            val markerOptions =
+                                                MarkerOptions().position(latLng).title(placeName)
+                                                    .snippet(placeName)
+                                            markerOptions.icon(
+                                                BitmapDescriptorFactory.defaultMarker(
+                                                    BitmapDescriptorFactory.HUE_AZURE
+                                                )
+                                            )
 
-                                            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f), object : GoogleMap.CancelableCallback {
-                                                override fun onFinish() {
-                                                    otherLocationMarker = gMap.addMarker(markerOptions)
-                                                }
+                                            gMap.animateCamera(
+                                                CameraUpdateFactory.newLatLngZoom(
+                                                    latLng,
+                                                    18f
+                                                ), object : GoogleMap.CancelableCallback {
+                                                    override fun onFinish() {
+                                                        otherLocationMarker =
+                                                            gMap.addMarker(markerOptions)
+                                                    }
 
-                                                override fun onCancel() {}
-                                            })
+                                                    override fun onCancel() {}
+                                                })
                                         } else {
-                                            Toast.makeText(requireActivity(), "Location Not Found", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                requireActivity(),
+                                                "Location Not Found",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     }
                                     .addOnFailureListener { exception ->
-                                        Toast.makeText(requireActivity(), "Failed to fetch place details: ${exception.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            requireActivity(),
+                                            "Failed to fetch place details: ${exception.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             }
                         }
                         .addOnFailureListener { exception ->
-                            Toast.makeText(requireActivity(), "Failed to search for places: ${exception.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                requireActivity(),
+                                "Failed to search for places: ${exception.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                 }
                 return false
@@ -247,26 +279,46 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     private fun requestLocationPermission() {
         if (ActivityCompat.checkSelfPermission(
-                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(
-                requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_CODE)
+                requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ), REQUEST_CODE
+            )
         } else {
             getLocation()
         }
     }
 
     private fun getLocation() {
-        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             Log.d("LocationPermission", "Requesting Location Permissions")
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_CODE)
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ), REQUEST_CODE
+            )
             return
         }
 
         Log.d("LocationStatus", "Permissions granted, fetching location...")
         fusedClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                Log.d("LocationStatus", "Location retrieved: Lat ${location.latitude}, Long ${location.longitude}")
+                Log.d(
+                    "LocationStatus",
+                    "Location retrieved: Lat ${location.latitude}, Long ${location.longitude}"
+                )
                 currentLocation = location
                 if (this::gMap.isInitialized) {
                     updateMapLocation()
@@ -287,7 +339,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             val addressList: List<Address>?
             var addressText = "My Current Location"
             try {
-                addressList = geocoder.getFromLocation(currentLocation!!.latitude, currentLocation!!.longitude, 1)
+                addressList = geocoder.getFromLocation(
+                    currentLocation!!.latitude,
+                    currentLocation!!.longitude,
+                    1
+                )
                 if (addressList != null && addressList.isNotEmpty()) {
                     addressText = addressList[0].getAddressLine(0)
                 }
@@ -295,7 +351,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 e.printStackTrace()
             }
 
-            val markerOptions = MarkerOptions().position(latLng).title(addressText).snippet(addressText)
+            val markerOptions =
+                MarkerOptions().position(latLng).title(addressText).snippet(addressText)
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
             currentLocationMarker?.remove()
             currentLocationMarker = gMap.addMarker(markerOptions)
@@ -306,7 +363,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             gMap.isMyLocationEnabled = true
             gMap.uiSettings.isMyLocationButtonEnabled = true
             fusedClient.lastLocation.addOnSuccessListener { location ->
@@ -332,21 +393,25 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         gMap.setOnMapClickListener { clickedLatLng ->
             val geocoder = Geocoder(requireActivity(), Locale.getDefault())
             try {
-                val addressList: List<Address>? = geocoder.getFromLocation(clickedLatLng.latitude, clickedLatLng.longitude, 1)
+                val addressList: List<Address>? =
+                    geocoder.getFromLocation(clickedLatLng.latitude, clickedLatLng.longitude, 1)
                 if (addressList != null && addressList.isNotEmpty()) {
                     val address = addressList[0]
                     val addressText = address.getAddressLine(0)
                     otherLocationMarker?.remove()
-                    val markerOptions = MarkerOptions().position(clickedLatLng).title(addressText).snippet(addressText)
+                    val markerOptions = MarkerOptions().position(clickedLatLng).title(addressText)
+                        .snippet(addressText)
                     markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
 
-                    gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(clickedLatLng, 18f), object : GoogleMap.CancelableCallback {
-                        override fun onFinish() {
-                            otherLocationMarker = gMap.addMarker(markerOptions)
-                        }
+                    gMap.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(clickedLatLng, 18f),
+                        object : GoogleMap.CancelableCallback {
+                            override fun onFinish() {
+                                otherLocationMarker = gMap.addMarker(markerOptions)
+                            }
 
-                        override fun onCancel() {}
-                    })
+                            override fun onCancel() {}
+                        })
 
                     Toast.makeText(requireActivity(), addressText, Toast.LENGTH_SHORT).show()
                 }
@@ -356,7 +421,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             getLocation()

@@ -7,8 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.cst.cstacademy2024.models.PlaceUser
 import com.cst.cstacademy2024.models.User
 import com.cst.cstacademy2024.viewModels.PlaceUserViewModel
@@ -48,14 +51,42 @@ class RegisterFragment : Fragment() {
             val email = emailField.text.toString()
             val phone = phoneField.text.toString()
 
-            val user = User(username = username, password = password, firstName = firstName, lastName = lastName, email = email, phone = phone)
+            if (username.isEmpty() || password.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                Toast.makeText(activity, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            userViewModel.insertUser(user)
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(activity, "Invalid email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            // Trimite obiectul User către MainActivity
-            val intent = Intent(activity, MainActivity::class.java)
-            intent.putExtra("USER", user) // Trimite obiectul User către MainActivity
-            startActivity(intent)
+            if (phone.length != 10 || !phone.matches(Regex("[0-9]+"))) {
+                Toast.makeText(activity, "Invalid phone number", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            lifecycleScope.launchWhenStarted {
+                if (userViewModel.checkUserExists(username)) {
+                    Toast.makeText(activity, "Username already exists", Toast.LENGTH_SHORT).show()
+                } else {
+                    val user = User(
+                        username = username,
+                        password = password,
+                        firstName = firstName,
+                        lastName = lastName,
+                        email = email,
+                        phone = phone
+                    )
+                    userViewModel.insertUser(user)
+
+                    // Navigate to MainActivity
+                    val intent = Intent(activity, MainActivity::class.java).apply {
+                        putExtra("USER", user)  // Passing User object to MainActivity
+                    }
+                    startActivity(intent)
+                }
+            }
         }
     }
 }

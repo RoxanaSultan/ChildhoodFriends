@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 
 class PlaceViewModel(application: Application) : AndroidViewModel(application) {
 
-    //    private val placeDao: PlaceDao = AppDatabase.getDatabase(application).placeDao()
     private val placeRepository: PlaceRepository
 
     init {
@@ -27,6 +26,7 @@ class PlaceViewModel(application: Application) : AndroidViewModel(application) {
             placeRepository.insertPlace(place)
         }
     }
+
     fun getAllPlaces(): LiveData<List<Place>> {
         return liveData(Dispatchers.IO) {
             emit(placeRepository.getAllPlaces())
@@ -39,9 +39,9 @@ class PlaceViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getPlaceById(id: Int): LiveData<Place> {
+    fun getPlaceById(id: Int, userId: Int): LiveData<Place> {
         return liveData(Dispatchers.IO) {
-            emit(placeRepository.getPlaceById(id))
+            emit(placeRepository.getPlaceById(id, userId))
         }
     }
 

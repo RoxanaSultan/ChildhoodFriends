@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed state -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/white"/> <!-- Background color when pressed -->
+            <stroke android:width="2dp" android:color="@color/feijoa"/> <!-- Border color and width -->
+        </shape>
+    </item>
+    <!-- Default state -->
+    <item>
+        <shape>
+            <solid android:color="@color/feijoa"/>
+        </shape>
+    </item>
+</selector>

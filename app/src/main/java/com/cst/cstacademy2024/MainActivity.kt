@@ -2,6 +2,7 @@ package com.cst.cstacademy2024
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -45,17 +46,26 @@ class MainActivity : AppCompatActivity() {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val api = retrofit.create(FakeApiService::class.java)
-    private lateinit var usersApiList : List<UserAPI>
+    private lateinit var usersApiList: List<UserAPI>
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        setTheme(R.style.Theme_Childhood)
+
         super.onCreate(savedInstanceState)
+
+        when (ThemeUtils.loadThemeMode(this)) {
+            ThemeUtils.LIGHT_MODE -> setTheme(R.style.Theme_Childhood)
+            ThemeUtils.DARK_MODE -> setTheme(R.style.Theme_CSTAcademy2024_Dark)
+        }
+
         setContentView(R.layout.activity_main)
+        setupThemeToggle()
 
         // Receive user object passed from previous activity
         user = intent.getSerializableExtra("USER") as? User
         user?.let {
             supportActionBar?.title = "Welcome, ${it.username}!"
-            sharedViewModel.setUser(it)
         }
 
         // Initialize ViewModels
@@ -63,31 +73,31 @@ class MainActivity : AppCompatActivity() {
         placeUserViewModel = ViewModelProvider(this).get(PlaceUserViewModel::class.java)
         placeViewModel = ViewModelProvider(this).get(PlaceViewModel::class.java)
 
+        user?.let {
+            userViewModel.getUser(it.username, it.password).observe(this, Observer { userObs ->
+                // Use the user object here
+                if (userObs != null) {
+                    this.user = userObs
+                    sharedViewModel.setUser(user!!)
+                    deleteUsersApi()
+                    insertAPIUsers()
+                }
+            })
+        }
 
         user?.let {
-            placeUserViewModel.deletePlacesAndUsers(it.id)
-            userViewModel.deleteAllUsers(it.id)
-            insertAPIUsers()
+
         }
 
 
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
         val navController = navHostFragment.navController
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
 
         // Set up Navigation Controller with Bottom Navigation View
         bottomNavigationView.setupWithNavController(navController)
 
-//        // Listen for navigation item selection if needed to pass arguments
-//        navController.addOnDestinationChangedListener { _, destination, _ ->
-//            if (destination.id == R.id.nav_account || destination.id == R.id.nav_maps) {
-//                val bundle = Bundle()
-//                bundle.putSerializable("USER", user)
-//                navController.navigate(destination.id, bundle)
-//            }
-//        }
-
-        // Optional: Set default selection
         if (savedInstanceState == null) {
             bottomNavigationView.selectedItemId = R.id.nav_account
         }
@@ -119,6 +129,38 @@ class MainActivity : AppCompatActivity() {
         "onDestroy".logErrorMessage()
     }
 
+    private fun setupThemeToggle() {
+        val toggleButton: Button = findViewById(R.id.toggle_button)
+        toggleButton.setOnClickListener {
+            val newTheme = if (ThemeUtils.loadThemeMode(this) == ThemeUtils.LIGHT_MODE) {
+                ThemeUtils.DARK_MODE
+            } else {
+                ThemeUtils.LIGHT_MODE
+            }
+            ThemeUtils.saveThemeMode(this, newTheme)
+            recreate()  // Recreate the activity to apply the new theme
+        }
+    }
+
+    private fun deleteUsersApi() {
+        lifecycleScope.launch {
+            try {
+                usersApiList = api.getUsers()
+                for (userAPI in usersApiList) {
+                    userViewModel.getUser(userAPI.username, userAPI.password)
+                        .observe(this@MainActivity, Observer { user ->
+                            user?.let {
+                                placeUserViewModel.deletePlacesAndUsers(it.id)
+                                userViewModel.deleteUser(it.id)
+                            }
+                        })
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     private fun insertAPIUsers() {
         lifecycleScope.launch {
             try {
@@ -128,78 +170,30 @@ class MainActivity : AppCompatActivity() {
                     delay(500)
                     val insertedUser = withContext(Dispatchers.IO) {
                         // Insert user into database
+                        userAPI.name.firstname = userAPI.name.firstname.capitalize()
+                        userAPI.name.lastname = userAPI.name.lastname.capitalize()
                         userViewModel.addUser(userAPI)
                         // Retrieve inserted user synchronously
                         userViewModel.getUserSync(userAPI.username, userAPI.password)
                     }
-
-                    insertedUser?.let {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "User ${it.username} inserted successfully!",
-                            Toast.LENGTH_SHORT
-                        ).show()
-
-                        // Assign location to the user
-//                        assignLocationToUser2(it.firstName, it.lastName, user!!.id, it.id)
-                    } ?: run {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Error inserting user. User not found.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
 
-                for(myUser in userViewModel.getAllUsers()){
-                    if (myUser.id != user!!.id){
-                        assignLocationToUser2(myUser.firstName, myUser.lastName, user!!.id, myUser.id)
+                for (myUser in userViewModel.getAllUsers()) {
+                    if (myUser.id != user!!.id) {
+                        assignLocationToUser2(
+                            myUser.firstName,
+                            myUser.lastName,
+                            user!!.id,
+                            myUser.id
+                        )
                     }
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.e("insertAPIUsers", "Error inserting or processing users: ${e.message}")
             }
         }
     }
-
-
-
-
-//    fun deleteUsersApi(){
-//        lifecycleScope.launch {
-//            try {
-//                placeUserViewModel.deletePlacesAndUsers(usersApiList)
-//                userViewModel.deleteUsers(usersApiList)
-//                Toast.makeText(
-//                    this@MainActivity,
-//                    "Users deleted successfully!",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//    }
-
-//    fun deleteUsersApi() {
-//        lifecycleScope.launch {
-//            try {
-//                placeUserViewModel.deletePlacesAndUsers(usersApiList)
-//                userViewModel.deleteUsers(usersApiList)
-//                withContext(Dispatchers.Main) {
-//                    Toast.makeText(
-//                        this@MainActivity,
-//                        "Users deleted successfully!",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                }
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//        }
-//    }
 
 
     fun hashNameToNumber(firstname: String, lastname: String, maxNumber: Int): Int {
@@ -210,7 +204,12 @@ class MainActivity : AppCompatActivity() {
         return (hashCode and Int.MAX_VALUE) % maxNumber
     }
 
-    private fun assignLocationToUser2(firstname: String, lastname: String, currentUserId: Int, user2Id: Int) {
+    private fun assignLocationToUser2(
+        firstname: String,
+        lastname: String,
+        currentUserId: Int,
+        user2Id: Int
+    ) {
         GlobalScope.launch(Dispatchers.Main) {
             val placesLiveData: LiveData<List<Int>> =
                 placeUserViewModel.getPlacesByUserId(currentUserId)
@@ -222,50 +221,29 @@ class MainActivity : AppCompatActivity() {
                     val locationIndex = hashNameToNumber(firstname, lastname, totalLocations)
                     val assignedPlaceId = placeIds[locationIndex]
 
-                    // Assuming userViewModel.getUserById(user2Id) returns LiveData<User>
                     val userLiveData: LiveData<User> = userViewModel.getUserById(user2Id)
                     userLiveData.observe(this@MainActivity, Observer { user2 ->
                         user2?.let {
-                            // Assuming placeUserViewModel.getCategoryByUserAndPlace(currentUserId, assignedPlaceId) returns LiveData<String>
-                            val categoryLiveData: LiveData<String> = placeUserViewModel.getCategoryByUserAndPlace(currentUserId, assignedPlaceId)
+                            val categoryLiveData: LiveData<String> =
+                                placeUserViewModel.getCategoryByUserAndPlace(
+                                    currentUserId,
+                                    assignedPlaceId
+                                )
                             categoryLiveData.observe(this@MainActivity, Observer { category ->
                                 category?.let {
                                     val placeUser = PlaceUser(
                                         placeId = assignedPlaceId,
                                         userId = user2.id,
-                                        category = it // Use the observed category string
+                                        category = it
                                     )
 
                                     placeUserViewModel.insertPlaceUser(placeUser)
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "Location assigned successfully to ${user2.firstName} ${user2.lastName}!",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } ?: run {
-                                    Toast.makeText(
-                                        this@MainActivity,
-                                        "Category information is missing.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
                                 }
                             })
 
-                        } ?: run {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "User2 information is missing.",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     })
 
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        "No locations found for the current user.",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
             })
         }

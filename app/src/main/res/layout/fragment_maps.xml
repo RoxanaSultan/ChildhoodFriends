@@ -37,6 +37,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="12dp"
-        android:onClick="onAddLocationClicked" />
+        android:onClick="onAddLocationClicked"
+        android:textColor="@drawable/text_color_login_register"/>
 
 </RelativeLayout>

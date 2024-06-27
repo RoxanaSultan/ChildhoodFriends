@@ -57,7 +57,6 @@ class SearchFragment : Fragment() {
 
         viewModel.user.observe(viewLifecycleOwner) { userVM ->
             // Update your UI here with user information
-            // For example: textView.text = user.name
             user = userVM
         }
         return view
@@ -71,14 +70,6 @@ class SearchFragment : Fragment() {
         setupRecyclerView()
         setupSearchEditText()
 
-
-
-//        // Observe changes in user list
-//        userViewModel.getAllUsers().observe(viewLifecycleOwner, Observer { users ->
-//            users?.let {
-//                usersAdapter.updateList(users)
-//            }
-//        })
     }
 
     private fun setupSpinner() {
@@ -92,14 +83,17 @@ class SearchFragment : Fragment() {
         }
 
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val category = parent.getItemAtPosition(position) as String
                 search(category, searchEditText.text.toString())
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // Do nothing
-            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
     }
 
@@ -107,7 +101,7 @@ class SearchFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 users = userViewModel.getAllUsers()
-                usersAdapter = UsersAdapter(usersList) // Initialize with empty list
+                usersAdapter = UsersAdapter(usersList)
                 usersAdapter.updateList(users)
                 recyclerView.adapter = usersAdapter
                 recyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -133,16 +127,13 @@ class SearchFragment : Fragment() {
     private fun search(category: String, placeName: String) {
         // Call the viewModel to get the filtered users based on category and place
         user?.let {
-            userViewModel.getUsersByCategoryPlace(category, placeName, it.id).observe(viewLifecycleOwner) { filteredUsers ->
-                // Create a HashSet with a custom equality check
-                val uniqueUsers = filteredUsers.distinctBy { it.firstName to it.lastName }
-                // Update the RecyclerView with the deduplicated users
-                usersAdapter.updateList(uniqueUsers)
-            }
+            userViewModel.getUsersByCategoryPlace(category, placeName, it.id)
+                .observe(viewLifecycleOwner) { filteredUsers ->
+                    // Create a HashSet with a custom equality check
+                    val uniqueUsers = filteredUsers.distinctBy { it.firstName to it.lastName }
+                    // Update the RecyclerView with the deduplicated users
+                    usersAdapter.updateList(uniqueUsers)
+                }
         }
     }
-
-
-
-
 }

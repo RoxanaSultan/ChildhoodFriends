@@ -14,6 +14,10 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getUser(username, password)
     }
 
+    suspend fun getUserByUsername(username: String): User? {
+        return userDao.getUserByUsername(username)
+    }
+
     suspend fun checkUserExists(username: String, password: String): Boolean {
         val user = userDao.getUser(username, password)
         return user != null
@@ -23,7 +27,13 @@ class UserRepository(private val userDao: UserDao) {
         return userDao.getUsersByCategoryPlace(category, place, userId)
     }
 
-    suspend fun updateUser(id: Int, email: String, firstName: String, lastName: String, phone: String) {
+    suspend fun updateUser(
+        id: Int,
+        email: String,
+        firstName: String,
+        lastName: String,
+        phone: String
+    ) {
         userDao.updateUser(id, email, firstName, lastName, phone)
     }
 
@@ -45,6 +55,10 @@ class UserRepository(private val userDao: UserDao) {
 
     suspend fun deleteAllUsers(userId: Int) {
         userDao.deleteAllUsers(userId)
+    }
+
+    suspend fun userExists(username: String): Boolean {
+        return userDao.userExists(username) > 0
     }
 
 }

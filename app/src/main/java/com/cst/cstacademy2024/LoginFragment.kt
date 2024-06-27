@@ -34,7 +34,7 @@ import org.json.JSONObject
 class LoginFragment : Fragment() {
 
     private lateinit var navController: NavController
-    private lateinit var userRepository : UserRepository
+    private lateinit var userRepository: UserRepository
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,7 +47,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Inițializează NavController
         navController = NavHostFragment.findNavController(this)
 
         val registerButton = view.findViewById<Button>(R.id.btn_register)
@@ -62,7 +61,7 @@ class LoginFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-	
+
     private fun doLogin() {
         val username = view?.findViewById<EditText>(R.id.et_user_name_login)?.text?.toString() ?: ""
         val password = view?.findViewById<EditText>(R.id.et_password_login)?.text?.toString() ?: ""
@@ -75,8 +74,8 @@ class LoginFragment : Fragment() {
                     val user = userRepository.getUser(username, password)
                     navigateToMainActivity(user)
                 } else {
-                    // Show error message or handle login failure
-                    Toast.makeText(requireContext(), "Invalid credentials", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Invalid credentials", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
 
@@ -88,7 +87,7 @@ class LoginFragment : Fragment() {
         val intent = Intent(requireContext(), MainActivity::class.java)
         intent.putExtra("USER", user)
         startActivity(intent)
-        requireActivity().finish() // Close login activity
+        requireActivity().finish()
     }
 
 
